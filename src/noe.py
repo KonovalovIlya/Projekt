@@ -1,13 +1,23 @@
-for a in range(11):
-    for b in range(11):
-        b = b * a
-        print(b, end = '\t')
-    print()
+import platform
 
-print()
+import sys
 
-for a in range(11):
-    for b in range(a, 11):
-        b = b * a
-        print(b, end='\t')
-    print()
+
+
+info = 'OS info is \n{}\n\nPython version is {} {}'.format(
+
+    platform.uname(),
+
+    sys.version,
+
+    platform.architecture(),
+
+)
+
+print(info)
+
+
+
+with open('os_info.txt', 'w', encoding='utf8') as file:
+
+    file.write(info)
