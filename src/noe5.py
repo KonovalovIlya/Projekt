@@ -1,12 +1,12 @@
-def min_divisor(number):
-    for divider in range(2, number + 1):
-        if number % divider == 0:
-            return divider
-            break
-        else:
-            return number
+films = ['Крепкий орешек', 'Назад в будущее', 'Таксист', 'Леон', 'Богемская рапсодия', \
+         'Город грехов', 'Мементо', 'Отступники', 'Деревня']
 
-
-number = int(input('Введите число: '))
-result = min_divisor(number)
-print(f'Минимальный делитель {result}')
+wl = []
+for film in films:
+    wf = input('Какой фильм хотите посмотреть: ')
+    if film == wf:
+        wl.append(film)
+        
+    else:
+        print('Такого фильма нет')
+print(wl)

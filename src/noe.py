@@ -1,23 +1,8 @@
-import platform
+number = int(input('Введите число: '))
 
-import sys
+number_list = []
 
-
-
-info = 'OS info is \n{}\n\nPython version is {} {}'.format(
-
-    platform.uname(),
-
-    sys.version,
-
-    platform.architecture(),
-
-)
-
-print(info)
-
-
-
-with open('os_info.txt', 'w', encoding='utf8') as file:
-
-    file.write(info)
+for numbers in range(1, number + 1):
+    if numbers % 2 != 0:
+        number_list.append(numbers)
+print(number_list)
