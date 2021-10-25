@@ -1,6 +1,6 @@
 word = list(input('Введите слово: '))
 symbols_counts = []
-count_unique= 0
+count_unique = 0
 for counts in range(len(word)):
     symbols_counts.append(0)
 for index in range(len(word)):

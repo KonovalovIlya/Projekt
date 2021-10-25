@@ -9,7 +9,7 @@ container_number_new = int(input('Введите вес нового конте�
 
 for index in range(len(container_list)):
     if container_list[index] <= container_number_new:
-        container_list.insert(index, str(container_number_new))
+        container_list.insert(index, container_number_new)
 
         break
 print(container_list)
