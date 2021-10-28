@@ -1,12 +1,12 @@
-def player_out(list_, number):
+def player_out(list_1, number, list_2):
     for i in range(number):
-        print(list_[i])
-        for i in range(number):
-            if i != number - 1:
-                players_list.append(players_list[0])
-                players_list.remove(players_list[0])
-            else:
-                n = players_list[0]
+        print(list_1[i])
+    for j in range(number):
+        if j != number - 1:
+            list_2.append(list_2[0])
+            list_2.remove(list_2[0])
+        else:
+            n = list_2[0]
     return n
 
 
@@ -27,7 +27,7 @@ players_list = list(range(1, players_number + 1))
 while len(players_list) > 1:
     print('начало отсчета с ', players_list[0])
     print('В игре', sorted(players_list))
-    number_out = player_out(counting_rhime_list, out)
+    number_out = player_out(counting_rhime_list, out, players_list)
     print('Выбывает игрок под номером', number_out)
     players_list.remove(number_out)
 print('Остался игрок под номером', players_list[0])

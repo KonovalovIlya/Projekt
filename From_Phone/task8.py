@@ -13,7 +13,7 @@ out = int(input('Число в считалке: '))
 print('Значит выбывает тот кто будет', out)
 players_list = list(range(1, players_number + 1))
 while len(players_list) > 1:
-    print('начало отсчета с ', players_list[0])
+    print('Начало отсчета с ', players_list[0])
     print('В игре', sorted(players_list))
     number_out = player_out(out)
     print('Выбывает игрок под номером', number_out)
