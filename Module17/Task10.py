@@ -12,3 +12,4 @@ k = 3
 string = input('Введите текст: ')
 string_2 = cesar_cipher(string, k)
 print(*string_2,)
+
