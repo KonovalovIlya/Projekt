@@ -8,7 +8,7 @@ for number in range(1, orders + 1):
         order_dict[order[0]][order[1]] += int(order[2])
     else:
         order_dict[order[0]] = {order[1]: int(order[2])}
-for client in order_dict.keys():
+for client in sorted(order_dict.keys()):
     print('{}:'.format(client))
-    for pizza in order_dict[client].keys():
+    for pizza in sorted(order_dict[client].keys()):
         print('\t{0}: {1}'.format(pizza, order_dict[client][pizza]))
