@@ -10,5 +10,5 @@ for pair_names in range(1, peoples):
         tree[pair[1]] = tree[pair[1]]
     tree[pair[0]] = tree[pair[1]] + 1
 print('Высота каждого члена семьи:')
-for i in sorted(tree):
-    print(i, tree[i])
+for family_member in sorted(tree.keys()):
+    print(family_member, tree[family_member])
