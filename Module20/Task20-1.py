@@ -1,12 +1,11 @@
 def data(dict):
-    list = []
+    list_ = []
     string = ''
     for elem in dict:
-        list += (dict[elem]['interests'])
-        string += dict[elem]['surname']
+        list_ += (dict.get(elem).get('interests'))
+        string += dict.get(elem).get('surname')
     count = len(string)
-
-    return list, count
+    return list_, count
 
 
 students = {
@@ -30,11 +29,8 @@ students = {
     }
 }
 
-
-
 for student_number, student_info in students.items():
-        print(student_number, student_info['name'])
-
+        print(student_number, student_info.get('name'))
 
 student_interests_lst, surname_all = data(students)
 print('Список интересов всех студентов: {interests}\nОбщая длина всех фамилий студентов: {surname_length}'.format(

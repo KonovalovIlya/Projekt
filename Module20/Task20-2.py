@@ -24,6 +24,16 @@ def is_prime(data_):
                 pass
             else:
                 list_.append(j)
+    elif isinstance(data_, set):
+        for n, j in enumerate(data_):
+            if n < 2:
+                pass
+            elif n == 2:
+                list_.append(j)
+            elif n % 2 == 0:
+                pass
+            else:
+                list_.append(j)
     elif isinstance(data_, tuple):
         for n, j in enumerate(data_):
             if n < 2:
@@ -39,11 +49,11 @@ def is_prime(data_):
             if n < 2:
                 pass
             elif n == 2:
-                list_.append({j: data_[j]})
+                list_.append({j: data_.get(j)})
             elif n % 2 == 0:
                 pass
             else:
-                list_.append({j: data_[j]})
+                list_.append({j: data_.get(j)})
     return list_
 
 
