@@ -10,7 +10,7 @@ while True:
             if surname in i:
                 print(*i, '-', j)
             else:
-                print('Ничего не надено')
+                print('Ничего не найдено')
     elif operation == 'добавить контакт':
         contact_id = input('Введите имя и фамилию контакта: ').upper().split()
         contact_phone_number = int(input('Введите номер телефона: '))
