@@ -4,37 +4,7 @@ def sort(data):
 
 def is_prime(data_):
     list_ = []
-    if isinstance(data_, list):
-        for n, j in enumerate(data_):
-            if n < 2:
-                pass
-            elif n == 2:
-                list_.append(j)
-            elif n % 2 == 0:
-                pass
-            else:
-                list_.append(j)
-    elif isinstance(data_, str):
-        for n, j in enumerate(data_):
-            if n < 2:
-                pass
-            elif n == 2:
-                list_.append(j)
-            elif n % 2 == 0:
-                pass
-            else:
-                list_.append(j)
-    elif isinstance(data_, set):
-        for n, j in enumerate(data_):
-            if n < 2:
-                pass
-            elif n == 2:
-                list_.append(j)
-            elif n % 2 == 0:
-                pass
-            else:
-                list_.append(j)
-    elif isinstance(data_, tuple):
+    if isinstance(data_, (list, str, set, tuple)):
         for n, j in enumerate(data_):
             if n < 2:
                 pass
