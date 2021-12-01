@@ -1,13 +1,10 @@
-def power(n):
-
-    if n == 1:
-        return str(n)
-    p = power(int(n)-1)
-    return ''.join([str(n), p])
-
+def order(number_):
+    if number_ == 1:
+        return (number_,)
+    number_ordered = order(number_-1)
+    return (*number_ordered,) + (number_,)
 
 
-int_num = int(input('Введите числo: '))
-d = power(int_num)
-print(sorted(d))
-
+number = int(input('Введите число: '))
+result = order(number)
+print(result)
