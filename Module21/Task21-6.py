@@ -1,8 +1,11 @@
 def site_consruct(number, structure):
+    for_print = ''
     for i in range(number):
         brend = input('Введите название продукта для нового сайта: ')
-        site_list[i] = search_function(structure, brend, 'title', 'h2')
-        print(site_list)
+        if for_print != '':
+            print(for_print)
+        for_print = search_function(structure, brend, 'title', 'h2')
+        print(for_print)
 
 
 def search_function(structure, brend, *args):
@@ -18,7 +21,7 @@ def search_function(structure, brend, *args):
     return structure
 
 
-site_list = {}
+# site_list = {}
 site = {
     'html': {
         'head': {
