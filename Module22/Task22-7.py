@@ -1,4 +1,4 @@
-def next_tour_f(data, score = '', dict_members = {}):
+def next_tour_f(data, score = '', tuple_members = tuple()):
     for string in data:
         if string.endswith('\n'):
             string = string[:-1]
@@ -7,26 +7,22 @@ def next_tour_f(data, score = '', dict_members = {}):
         else:
             members = string.split()
             if members[2] > score:
-                dict_members[(members[0], members[1])] = members[2]
-    for i, j in dict_members.items():
-
-    print(dict_members)
+                tuple_members += (((members[0], members[1]),members[2]),)
+    tuple_members = tuple(sorted(tuple_members, key= lambda member: member[1], reverse=True))
     second_tour = open('second_tour.txt', 'w')
-    second_tour.write(str(len(list(enumerate(dict_members))))+'\n')
+    second_tour.write(str(len(list(enumerate(tuple_members)))) + '\n')
     second_tour.close()
-    for i, j in enumerate(dict_members):
+    for i, j in enumerate(tuple_members):
         second_tour = open('second_tour.txt', 'a')
         second_tour.write(
         '{0}) {1}. {2} {3}\n'.format(
-            i,
-            j[1][0],
-            j[0],
-            dict_members.get(j)
+            i+1,
+            j[0][1][0],
+            j[0][0],
+            j[1]
         )
-
     )
-
-    # return  dict_members
+    second_tour.close()
 
 
 first_tour = open('first_tour.txt', 'w')
@@ -38,7 +34,5 @@ first_tour.write(
     'Vasiliev Maxim 78\n'
 )
 first_tour.close()
-
 first_tour = open('first_tour.txt', 'r')
-# next_tour_f(first_tour)
-print(next_tour_f(first_tour))
+next_tour_f(first_tour)
