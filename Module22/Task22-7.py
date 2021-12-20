@@ -12,16 +12,16 @@ def next_tour_f(data, score = '', tuple_members = tuple()):
     second_tour = open('second_tour.txt', 'w')
     second_tour.write(str(len(list(enumerate(tuple_members)))) + '\n')
     second_tour.close()
+    second_tour = open('second_tour.txt', 'a')
     for i, j in enumerate(tuple_members):
-        second_tour = open('second_tour.txt', 'a')
         second_tour.write(
-        '{0}) {1}. {2} {3}\n'.format(
-            i+1,
-            j[0][1][0],
-            j[0][0],
-            j[1]
+            '{0}) {1}. {2} {3}\n'.format(
+                i+1,
+                j[0][1][0],
+                j[0][0],
+                j[1]
+            )
         )
-    )
     second_tour.close()
 
 
