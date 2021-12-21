@@ -92,3 +92,4 @@ try:
     print(f'- Leeloo Dallas! Multi-pass № {result}!')
 except:
     print('остальные исключения')
+
