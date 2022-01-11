@@ -1,7 +1,6 @@
 total_summ = 0
-calc = open('calc.txt', 'r')
-for string in calc:
-    # try:
+with open('calc.txt', 'r') as calc:
+    for string in calc:
         if string.endswith('\n'):
             string = string[:-1]
         a = int(string.split()[0])
