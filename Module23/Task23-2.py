@@ -7,7 +7,7 @@ def f(x, y):
     try:
         return x / y
     except ZeroDivisionError:
-        print("V pervoi funkcii delenie na nol")
+        print("В первой функции деление на ноль")
 
 
 def f2(x, y):
@@ -16,7 +16,7 @@ def f2(x, y):
     try:
         return x / y
     except ZeroDivisionError:
-        print("Vo vtoroi funkcii delenie na nol")
+        print("Во второй функции деление на ноль")
 
 
 my_list = []
@@ -29,7 +29,7 @@ for line in file:
     try:
         my_list.append(sorted([res1, res2, number]))
     except TypeError:
-        print('Ne podhodyashi tip dannih dlya sortirovki')
+        print('Не подходящий тип данных для сортировки')
 file.close()
 file_2 = open('result.txt', 'a')
 for i in my_list:
@@ -37,6 +37,6 @@ for i in my_list:
         file_2.write(str(i))
         file_2.write('\n')
     except TypeError:
-        print('Tip dannih ne stroka')
+        print('Тип данных не строка')
 file_2.close()
 
