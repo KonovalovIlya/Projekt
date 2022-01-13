@@ -44,17 +44,24 @@ class Humanoid:
         print('Привет! Меня зовут {}'.format(self.name))
 
     def eat(self):
+        print('Пора поесть')
         self.satiety += 5
-        self.home.food -= 10
+        print('Сытость +5')
+        self.home.food -= 9
+        print('Еды осталось {}'.format(self.home.food))
 
     def working(self):
+        print('Пора поработать')
         self.satiety -= 5
         self.home.money += 15
+        print('Теперь есть {} денег'.format(self.home.money))
 
     def play(self):
+        print('Можно и поиграть')
         self.satiety -= 2
 
     def shopping(self):
+        print('Пора купить еды')
         self.home.money -= 10
         self.home.food += 10
 
@@ -76,4 +83,7 @@ def hi_is_alive(man):
 
 
 man = Humanoid('Валера')
-hi_is_alive(man)
+for _ in range(365):
+    hi_is_alive(man)
+    if man.satiety == 0:
+        print('+1 Труп')
