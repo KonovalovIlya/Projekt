@@ -168,14 +168,118 @@
 # for _ in range(3):
 #     moya_gryadka.virashivanie()
 # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-def sort(list):
-    sort = True
-    while sort:
-        sort = False
-        for i in range(len(list) - 1):
-            if list[i] < list[i + 1]:
-                list[i], list[i + 1] = list[i + 1], list[i]
-                sort = True
-    return list
-
-print(sort([1,5,8,3,9,4,1,3,6]))
+#
+# \\Точка с координатамии гетеры и сетеры
+#
+# class Tochka:
+#     __name = ''
+#     __x = 0
+#     __y = 0
+#     def set_name(self, name):
+#         self.__name = name
+#
+#     def set_x(self, x):
+#         if isinstance(x, int):
+#             self.__x = x
+#         else:
+#             raise Exception('Координата точки должна быть целым числом')
+#
+#     def set_y(self, y):
+#         if isinstance(y, int):
+#             self.__y = y
+#         else:
+#             raise Exception('Координата точки должна быть целым числом')
+#
+#     def __init__(self, name, x = 0, y = 0):
+#         self.set_name(name)
+#         self.set_x(x)
+#         self.set_y(y)
+#
+#     def get_name(self):
+#         return self.__name
+#
+#     def get_x(self):
+#         return self.__x
+#
+#     def get_y(self):
+#         return self.__y
+#
+#     def __str__(self):
+#         return  'Координаты точки {}: {}, {}'.format(self.get_name(), self.get_x(), self.get_y())
+#
+#
+# t = Tochka('t', 5, 7)
+# t2 = Tochka('t2', 3, 9)
+# print(t.__str__())
+# print(t2.__str__())
+# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# Задача 1. Юниты
+#
+# Есть базовый класс «Юнит», который определяется количеством здоровья (хитпоинты). У Юнита есть действие
+# «получить урон» (базовый класс получает 0 урона).
+#
+# Также есть два дочерних класса:
+#
+# Солдат: получает урон, равный переданному значению.
+# Обычный гражданин: получает урон, равный двукратному переданному значению.
+# Реализуйте родительский и дочерние классы и их методы, используя принцип полиморфизма (а также инкапсуляции и
+# наследования, конечно же).
+#
+# class Unit:
+#     def __init__(self, health):
+#         self.__health = health
+#
+#     def hit(self, hit):
+#         self.__health -= 0
+#
+#
+# class Soldier(Unit):
+#     def __init__(self, health):
+#         super().__init__(health)
+#         self.set_health(health)
+#
+#     def set_health(self, number):
+#          self.__health = number
+#
+#     def get_health(self):
+#         return self.__health
+#
+#     def hit(self, hit):
+#         health = self.get_health()
+#         health -= hit
+#         self.set_health(health)
+#
+#     def __str__(self):
+#         return 'У солдата осталось {} здоровья'.format(self.get_health())
+#
+#
+# class Civilian(Unit):
+#     def __init__(self, health):
+#         super().__init__(health)
+#         self.set_health(health)
+#
+#     def set_health(self, number):
+#         self.__health = number
+#
+#     def get_health(self):
+#         return self.__health
+#
+#     def hit(self, hit):
+#         health = self.get_health()
+#         health -= hit*2
+#         self.set_health(health)
+#
+#     def __str__(self):
+#         return 'У гражданского осталось {} здоровья'.format(self.get_health())
+#
+#
+# s = Soldier(health=10)
+# c = Civilian(health=10)
+# s.hit(4)
+# c.hit(4)
+# print(s.__str__())
+# print(c.__str__())
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
+#
