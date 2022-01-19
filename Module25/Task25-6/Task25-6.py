@@ -73,11 +73,23 @@ class House:
     def set_food_pet_down(self, number):
       self.__food_pet -= number
 
+    def set_dirt(self, number):
+      self.__dirt = number
+
     def set_dirt_up(self, number):
       self.__dirt += number
 
     def set_dirt_down(self, number):
       self.__dirt -= number
+
+    def get_dirt(self):
+        return self.__dirt
+
+    def get_food(self):
+        return self.__food
+
+    def get_money(self):
+        return self.__money
 
     def __str__(self):
         return 'кол-во денег в тумбочке - {money}, кол-во еды в холодильнике - {food}, ' \
@@ -110,17 +122,25 @@ class Humanoid:
     def set_satiety_down(self, number):
         self.__satiety -= number
 
-    # def get_name(self):
-    #     return self.__name
-    #
-    # def get_satiety(self):
-    #     return self.__satiety
-    #
-    # def get_happiness(self):
-    #     return self.__happiness
+    def get_name(self):
+        return self.__name
+
+    def get_satiety(self):
+        return self.__satiety
+
+    def get_happiness(self):
+        return self.__happiness
 
     def glitch_the_cat(self):
         self.set_happiness_up(5)
+
+    def eat(self, house):
+        print('Пора поесть')
+        eating = random.randint(1, 30)
+        house.set_food_down(eating)
+        self.set_satiety_up(eating)
+        print('Сытость +{}'.format(eating))
+        print('Еды осталось {}'.format(house.get_food()))
 
     def __str__(self):
         return 'Имя - {name}, степень сытости - {satiety} и степень счастья - {happiness}'.format(
@@ -133,11 +153,7 @@ class Humanoid:
 class Husband(Humanoid):
     def __init__(self, name):
         super().__init__(name)
-
-    def eat(self, house):
-        eating = random.randint(1, 30)
-        house.set_food_down(house, eating)
-        self.set_satiety_up(eating)
+        print('Привет! Меня зовут {}'.format(self.get_name()))
 
     def play(self):
         self.set_satiety_down(10)
@@ -145,19 +161,15 @@ class Husband(Humanoid):
 
     def work(self, house):
         self.set_satiety_down(10)
-        house.set_money_up(house, 150)
+        house.set_money_up(150)
 
 
 class Wife(Humanoid):
     def __init__(self, name):
         super().__init__(name)
+        print('Привет! Меня зовут {}'.format(self.get_name()))
 
-    def eat(self, house):
-        eating = random.randint(1, 30)
-        house.set_food_down(house, eating)
-        self.set_satiety_up(eating)
-
-    def bye_food(self, house):
+    def shopping_food(self, house):
         amount = 10 * random.randint(1, 7)
         self.set_satiety_down(10)
         house.set_food_up(amount)
@@ -166,11 +178,16 @@ class Wife(Humanoid):
     def cleaning(self, house):
         amount = random.randint(30, 100)
         self.set_satiety_down(10)
-        if not house.__dirt - amount >=0:
-            house.__dirt = 0
-        elif house.__dirt > 90:
+        if not house.get_dirt() - amount >= 0:
+            house.set_dirt(0)
+        else:
+            house.set_dirt_down(amount)
 
-        house.set_dirt_down(house, amount)
+    def shopping_fur_coat(self, house):
+        print('{}, похоже пора купить шубу'.format(wife.get_name()))
+        house.set_money_down(350)
+        self.set_satiety_down(10)
+        self.set_happiness_up(60)
 
 
 class Pet:
@@ -184,19 +201,80 @@ class Pet:
     def set_satiety_down(self, number):
         self.__satiety -= number
 
+    def get_satiety(self):
+        return self.__satiety
+
     def eat(self, house):
         eating = random.randint(1, 30)
         self.set_satiety_up(eating)
         house.set_food_pet_down(house, eating)
 
 
-home = House()
-h = Husband('Vova')
-h2 = Husband('Dima')
-print(home.__str__())
-h.eat(home)
-h2.eat(home)
+class Cat(Pet):
+    def __init__(self, name):
+        super().__init__(name)
 
-print(h.__str__())
-print(h2.__str__())
-print(home.__str__())
+    def wall_crushing(self, house):
+        self.set_satiety_down(10)
+        house.set_dirt_up(5)
+
+    def sleep(self):
+        self.set_satiety_down(10)
+
+
+class Death(Exception):
+    pass
+
+
+def another_day(home, husband, wife, cat):
+    death = False
+    if husband.get_satiety() <= 0 or wife.get_satiety() <= 0 or cat.get_satiety() <= 0:
+        death = True
+    elif husband.get_happiness() <= 10 or wife.get_happiness() <= 10:
+        death = True
+    if death:
+        print('У нас тепленький труп!')
+        raise Death(Exception)
+
+    home.set_dirt_up(5)
+    if home.get_dirt() > 90:
+        husband.set_happiness_down(10)
+        wife.set_happiness_down(10)
+
+    cube = random.randint(1, 6)
+    if husband.get_satiety() < 20:
+        print('Эй {}'.format(husband.get_name()))
+        husband.eat(home)
+    if wife.get_satiety() < 20:
+        print('Эй {}'.format(wife.get_name()))
+        wife.eat(home)
+    if wife.get_happiness() < 20:
+        wife.shopping_fur_coat(home)
+    elif home.get_food() < 10:
+        wife.shopping_food(home)
+    elif home.get_money() < 50:
+        husband.work(home)
+    elif cube == 1:
+        husband.work(home)
+    elif cube == 2:
+        wife.cleaning(home)
+    else:
+        husband.play()
+        wife.glitch_the_cat()
+
+
+home = House()
+husband = Husband('Vova')
+wife = Wife('Liza')
+cat = Cat('Tom')
+
+for i in range(365):
+    print('День {}'.format(i))
+    another_day(home, husband, wife, cat)
+# print(home.__str__())
+# husband.eat(home)
+# wife.eat(home)
+#
+# print(husband.__str__())
+# print(wife.__str__())
+# print(home.__str__())
