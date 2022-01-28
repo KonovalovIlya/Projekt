@@ -282,4 +282,93 @@
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
+#Итераторы
+# # l = [10, 20, 30]
+# # i = iter(l)
+# # while True:
+# #     try:
+# #         print(next(i))
+# #     except StopIteration:
+#         pass
+
+# Бесконечный итератор
+# class СountIterator:
+#     count = 0
 #
+#     def __iter__(self):
+#         return self
+#
+#     def __next__(self):
+#         vol = self.count
+#         self.count += 1
+#         return self.count
+#
+#
+# my_iter = СountIterator()
+# for i_elem in my_iter:
+#     print(i_elem)
+# Случайная сумма
+# import random
+#
+#
+# class RandomSum:
+#     def __init__(self, number):
+#         self.count = 0
+#         self.elem_1 = round(random.uniform(0, 1), 2)
+#         self.elem_2 = round(random.uniform(0, 1), 2) + self.elem_1
+#         self.limit = number
+#
+#     def __iter__(self):
+#         self.count = 0
+#         self.elem_1 = round(random.uniform(0, 1), 2)
+#         self.elem_2 = round(random.uniform(0, 1), 2) + self.elem_1
+#         return self
+#
+#
+#     def __next__(self):
+#         if self.count < self.limit:
+#             self.elem_1 = self.elem_2
+#             self.elem_2 = round(random.uniform(0, 1), 2) + self.elem_1
+#             self.count += 1
+#             return self.elem_2
+#         else:
+#             raise StopIteration
+#
+#
+# iter = RandomSum(10)
+# for i in iter:
+#     print(i)
+# print('abra-kadabra')
+# for i in iter:
+#     print(i)
+#
+# Генератор
+# def gen():
+#     c = 0
+#     while True:
+#         yield c
+#         c+=1
+#
+#
+# for i in gen():
+#     print(i)
+#
+# Генератор простых чисел
+# def IsPrime(n):
+#     if n == 0:
+#         return False
+#     if n == 1:
+#         return True
+#     d = 2
+#     while n % d != 0:
+#         d += 1
+#     return d == n
+#
+# def g_p(number):
+#     for i in range(1, number+1):
+#         if IsPrime(i):
+#             yield i
+#
+#
+# for i in g_p(11):
+#     print(i)
