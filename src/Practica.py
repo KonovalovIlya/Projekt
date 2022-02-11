@@ -372,3 +372,113 @@
 #
 # for i in g_p(11):
 #     print(i)
+#
+# ФУНКЦИИ КАК ОБЪЕКТЫ.
+# def func_1(x):
+#
+#     return x + 10
+#
+# def func_2(func, num):
+#     res = func(num)
+#     return res*res
+#
+#
+# print(func_1(9))
+# print(func_2(func_1, 9))
+# import time
+#
+#
+# def timer(func):
+#     started = time.time()
+#     func()
+#     stopped = time.time()
+#     time_res = stopped-started
+#     return time_res
+#
+# def sq():
+#     num = 100
+#     res = 0
+#     for _ in range(num + 1):
+#         res += sum(i**2 for i in range(10000))
+#     return res
+#
+# print(timer(sq))
+#
+# ДЕКОРАТОРЫ
+#
+#
+# def decorator(func):
+#     def wrapped_func(*arg, **kwarg):
+#         func(*arg, **kwarg)
+#         func(*arg, **kwarg)
+#     return wrapped_func
+#
+# @decorator
+# def greeting(name):
+#     print('Привет, {name}!'.format(name=name))
+#
+#
+# greeting('Tom')
+#
+# import time
+#
+#
+# def timer(func):
+#     def wrapped_func(*arg, **kwarg):
+#         started = time.time()
+#         res = func(*arg, **kwarg)
+#         stopped = time.time()
+#         time_res = stopped-started
+#         print('Func rabotala {} sec'.format(time_res))
+#         return res
+#     return wrapped_func
+#
+# @timer
+# def sq():
+#     num = 100
+#     res = 0
+#     for _ in range(num + 1):
+#         res += sum(i**2 for i in range(10000))
+#     return res
+#
+# my_t = sq()
+# print(my_t)
+#
+#
+# def bread(func):
+#     def wrapped_func():
+#         f = func()
+#         return '\t< / ----------\ >\n\t{func}\n\t< \______ / >'.format(func = f)
+#     return wrapped_func
+#
+# def ingred(func):
+#     def wrapped_func():
+#         f = func()
+#         return '\t#помидоры#\n\t{func}\n\t~салат~'.format(func=f)
+#     return wrapped_func
+#
+#
+# @bread
+# @ingred
+# def sandwich():
+#     return '--ветчина--'
+#
+# print(sandwich())
+
+PLAGINS = dict()
+
+
+def register(func):
+    PLAGINS[func.__name__] = func
+    return func
+
+@register
+def hello(name):
+    return 'Hello, {}!'.format(name)
+
+@register
+def baye(name):
+    return 'Goodbaye, {}!'.format(name)
+
+print(PLAGINS)
+print(hello('Tom'))
