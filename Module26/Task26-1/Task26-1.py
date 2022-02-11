@@ -1,16 +1,19 @@
 # Пользователь вводит число N. Напишите программу, которая генерирует последовательность из квадратов чисел
 # от 1 до N (1 ** 2, 2 ** 2, 3 ** 2 и так далее). Реализацию напишите тремя способами:
 # класс-итератор, функция-генератор и генераторное выражение.
-class Iterator:
-    def __init__(self, number):
+from collections.abc import Iterable, Iterator
+
+
+class Iteratorr:
+    def __init__(self, number: int)-> None:
         self.count = 0
         self.value = 1
         self.limit = number
 
-    def __iter__(self):
+    def __iter__(self)-> Iterator:
         return self
 
-    def __next__(self):
+    def __next__(self)-> int:
         if self.count < self.limit:
             res = self.value ** 2
             self.value += 1
@@ -20,12 +23,12 @@ class Iterator:
             raise StopIteration
 
 
-def gen_sq_func(number):
+def gen_sq_func(number: int)-> Iterable[int]:
     for i in range(1, number + 1):
         yield i ** 2
 
 
-iterator = Iterator(10)
+iterator = Iteratorr(10)
 for i in iterator:
     print(i)
 print('_______________________')

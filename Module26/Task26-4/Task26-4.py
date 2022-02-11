@@ -12,8 +12,10 @@
 #             return q
 #         else:
 #             return self.list_
+from typing import List
 
-def Q(list_, range_):
+
+def Q(list_: List, range_: int)->List:
     if list_ == [1,1]:
         for _ in range(range_):
             q = list_[-list_[-1]] + list_[-list_[-2]]

@@ -464,21 +464,21 @@
 #     return '--ветчина--'
 #
 # print(sandwich())
-
-PLAGINS = dict()
-
-
-def register(func):
-    PLAGINS[func.__name__] = func
-    return func
-
-@register
-def hello(name):
-    return 'Hello, {}!'.format(name)
-
-@register
-def baye(name):
-    return 'Goodbaye, {}!'.format(name)
-
-print(PLAGINS)
-print(hello('Tom'))
+#
+# PLAGINS = dict()
+#
+#
+# def register(func):
+#     PLAGINS[func.__name__] = func
+#     return func
+#
+# @register
+# def hello(name):
+#     return 'Hello, {}!'.format(name)
+#
+# @register
+# def baye(name):
+#     return 'Goodbaye, {}!'.format(name)
+#
+# print(PLAGINS)
+# print(hello('Tom'))

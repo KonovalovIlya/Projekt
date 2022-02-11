@@ -1,7 +1,8 @@
 import os
+from collections.abc import Iterable
 
 
-def gen_files_path(cur_path, dir_name):
+def gen_files_path(cur_path: str, dir_name: str)-> None:
     # start = 'C:\\'
     try:
         for i in os.listdir(cur_path):
@@ -24,7 +25,7 @@ def gen_files_path(cur_path, dir_name):
 
 
 
-def gen(cur_path):
+def gen(cur_path: str)-> Iterable[str]:
     for j in os.listdir(cur_path):
         yield j
 

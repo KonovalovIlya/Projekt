@@ -1,4 +1,7 @@
-def gen(number):
+from collections.abc import Iterable
+
+
+def gen(number: int)-> Iterable[int]:
     for x in list_1:
         for y in list_2:
             result = x * y

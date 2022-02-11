@@ -1,17 +1,20 @@
+from typing import Any
+
+
 class Node(object):
-    def __init__(self, item):
+    def __init__(self, item: Any)-> None:
         self.item = item
         self.next = None
 
 
 class LinkedList:
-    def __init__(self):
+    def __init__(self)-> None:
         self.head = None
 
-    def is_empty(self):
+    def is_empty(self)-> bool:
         return self.head is None
 
-    def append(self, item):
+    def append(self, item: Any)-> None:
         node = Node(item)
         if self.is_empty():
             self.head = node
@@ -21,19 +24,19 @@ class LinkedList:
                 cur = cur.next
             cur.next = node
 
-    def travel(self):
+    def travel(self)-> None:
         cur = self.head
         while cur:
             yield cur.item
             cur = cur.next
 
-    def get(self, position):
+    def get(self, position: int)-> Any:
         cur = self.head
         for _ in range(position):
             cur = cur.next
         return cur.item
 
-    def remove(self, position):
+    def remove(self, position: int)-> None:
         cur = self.head
         cur_position = 0
         cur_be_for = None
