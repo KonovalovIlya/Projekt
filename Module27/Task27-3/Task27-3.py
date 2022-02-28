@@ -8,10 +8,11 @@
 # Дополнительно: запишите дату и время возникновения ошибки, используя модуль datetime.
 #
 import datetime
+from typing import Callable, Any
 
 
-def logging(func):
-    def wrapped():
+def logging(func: Callable) -> Callable:
+    def wrapped() -> Any:
         print('Выполняется функция {func}\nДокументация к функции: {doc}'.format(
             func=func.__name__,
             doc=func.__doc__
@@ -22,13 +23,13 @@ def logging(func):
     return wrapped
 
 @logging
-def test():
+def test() -> None:
     """ Тест декоратора """
     print('<Тут что-то происходит...>')
 
 
 try:
-    test(1)
+    test()
 except TypeError:
     with open('function_errors.log', 'w', encoding='UTF-8') as file:
         file.write('Время - {h}:{m}:{s}\tДата - {date}\nНазвание ошибки: {name}\nОписание ошибки: {str}'.format(
@@ -39,4 +40,4 @@ except TypeError:
             name=TypeError.__name__,
             str=TypeError.__doc__
         ))
-    print('OSHIBKA')
+    print('Ошибка')

@@ -1,8 +1,10 @@
 import functools
+from typing import Callable, Any
 
-def debug(func):
+
+def debug(func: Callable) -> Callable:
     @functools.wraps(func)
-    def wrapped(*arg, **kwarg):
+    def wrapped(*arg, **kwarg) -> Any:
         if arg:
             if kwarg:
                 print('Вызывается {func_name}({arg}, {kwarg})'.format(
@@ -41,7 +43,7 @@ def debug(func):
     return wrapped
 
 @debug
-def greeting(name, age=None):
+def greeting(name: str, age: int=None):
     if age:
         return "Ого, {name}! Тебе уже {age} лет, ты быстро растёшь!".format(name=name, age=age)
     else:
