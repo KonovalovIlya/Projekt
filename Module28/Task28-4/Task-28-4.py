@@ -25,8 +25,6 @@ class Date:
         return 'День: {}\tМесяц: {}\tГод: {}'.format(self.day, self.month, self.year)
 
 
-
-
 date = Date.from_string('10-12-2077')
 print(date)
 print(Date.is_date_valid('10-12-2077'))

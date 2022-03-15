@@ -18,6 +18,7 @@ class MyMath():
     def cube_volume(cls, length : int) -> int:
         return length**3
 
+
 res_1 = MyMath.circle_len(radius=5)
 res_2 = MyMath.circle_sq(radius=6)
 res_3 = MyMath.cube_volume(length=4)

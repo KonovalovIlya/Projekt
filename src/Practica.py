@@ -528,3 +528,118 @@
 # car.play_music()
 # print(car)
 #
+# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# Контекст-менеджер из библиотеки.
+# import time
+# from contextlib import contextmanager
+# from collections.abc import Iterator
+#
+#
+# @contextmanager
+# def timer() -> Iterator:
+#     start = time.time()
+#     try:
+#         yield
+#     finally:
+#         print(time.time() - start)
+#
+#
+# with timer() as t1:
+#     print('Первая часть')
+#     val_1 = 100 * 1000 ** 10000
+#
+# with timer() as t2:
+#     print('Вторая часть')
+#     val_2 = 200 * 2000 ** 20000
+# #
+# import os
+# from contextlib import contextmanager
+# from collections.abc import Iterator
+#
+# @contextmanager
+# def in_dir(path: str):
+#     yield os.path.join(path)
+#
+#
+# with in_dir('C:\\') as dir_:
+#
+#     print(os.listdir(dir_))
+#
+# Декораторы с аргументами:
+# def repit(amount):
+#     def do(func):
+#         def wrapped(*arg, **kwarg):
+#             for _ in range(amount):
+#                 func()
+#         return wrapped
+#     return do
+#
+# @repit(amount=4)
+# def func():
+#     print('Hello')
+#
+# func()
+#
+# Декораторы классов:
+# import time
+# import functools
+# from datetime import datetime
+# def class_decorator(cls):
+#     @functools.wraps(cls)
+#     def wrapped(*arg, **kwarg):
+#         instance = cls(*arg, **kwarg)
+#         print('Время создания {}'.format(datetime.utcnow()))
+#         print('Методы класса: {}'.format(dir(cls)))
+#         return instance
+#     return wrapped
+#
+# @class_decorator
+# class ClassName:
+#     def __init__(self):
+#         pass
+#
+#     def mrthod_1(self):
+#         pass
+#
+#     def mrthod_2(self):
+#         pass
+#
+#
+# instance_1 = ClassName()
+# time.sleep(2)
+# instance_2 = ClassName()
+#
+# import functools
+#
+# def decorator(data):
+#     print(data.__name__)
+#     print(data.__annotations__)
+#     print(data.__doc__)
+#
+# def logging(decorator):
+#     @functools.wraps(decorator)
+#     def decorate(cls):
+#         for i_method in dir(cls):
+#             if i_method.startswith('__') is False:
+#                 cur_method = getattr(cls, i_method)
+#                 decorate_method = decorator(cur_method)
+#                 setattr(cls, i_method, decorate_method)
+#         return cls
+#     return decorate
+#
+# @logging(decorator)
+# class ClassName:
+#     def __init__(self) -> None:
+#         """Privet"""
+#         pass
+#
+#     def method_1(self, uno, duo) -> None:
+#         """Privet"""
+#         pass
+#
+#     def method_2(self, *arg, **kwarg) -> None:
+#         """Privet"""
+#         pass
+#
+#
+# a = ClassName()
