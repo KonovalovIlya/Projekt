@@ -2,29 +2,23 @@ import functools
 from collections.abc import Callable
 
 
-def decorator_with_args_for_any_decorator(*args):
-    def dec(decorator):
-        @functools.wraps(decorator)
-        def wrap(*args, **kwargs):
-            print('Переданные арги и кварги в декоратор: {args_kwargs}'.format(
-                args_kwargs=args
-                # kwargs=**kwargs
-            ))
-            decorator(arg)
-            return
-        return wrap
-    return dec
+def decorator_with_args_for_any_decorator(decorator: Callable) -> Callable:
+    @functools.wraps(decorator)
+    def wrap(*args, **kwargs):
+        print('Переданные арги и кварги в декоратор: {args_kwargs}'.format(
+            args_kwargs=args
+        ))
+        return decorator(args)
+    return wrap
 
 
 @decorator_with_args_for_any_decorator
-def decorated_decorator(func: Callable, *args, **kwargs): # отсюда уже сами!
-
-
-    def dec(func):
+def decorated_decorator(*args, **kwargs) -> Callable:
+    def dec(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrap(*args, **kwargs):
-
             func(*args, **kwargs)
+            return
         return wrap
     return dec
 
