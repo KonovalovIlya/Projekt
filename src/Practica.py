@@ -647,23 +647,73 @@
 #|||||||||||||||||||||||||||||||||||||||||||||||||||
 # Пространство имён и области видимости
 #
-def for_dict(data):
-    for l in data:
-        for i, j in enumerate(l):
-            if i == 1:
-                return l[j]
-
-grades = [
-    {'name': 'Kenneth', 'score': 3}, {'name': 'Bebe', 'score': 41}, {'name': 'Joyce', 'score': 24},
-    {'name': 'Richard', 'score': 37}, {'name': 'Marian', 'score': 44}, {'name': 'Jana', 'score': 45},
-    {'name': 'Sarah', 'score': 90}, {'name': 'Eddie', 'score': 2}, {'name': 'Mary', 'score': 63},
-    {'name': 'Ronald', 'score': 15}, {'name': 'David', 'score': 44}, {'name': 'Richard', 'score': 78},
-    {'name': 'Warren', 'score': 7}, {'name': 'Alyssa', 'score': 13}, {'name': 'Lloyd', 'score': 52},
-    {'name': 'Vanessa', 'score': 6}, {'name': 'Karen', 'score': 40}, {'name': 'James', 'score': 54},
-    {'name': 'Annie', 'score': 87}, {'name': 'Glenn', 'score': 9}, {'name': 'Bruce', 'score': 68},
-    {'name': 'Ramona', 'score': 64}, {'name': 'Jeannie', 'score': 22}, {'name': 'Aaron', 'score': 3},
-    {'name': 'Ronnie', 'score': 47}, {'name': 'William', 'score': 94}, {'name': 'Sandra', 'score': 40},
-]
-
-for_dict(grades)
-print(sorted(grades, key= lambda elem: elem))
+# def for_dict(data):
+#     for l in data:
+#         for i, j in enumerate(l):
+#             if i == 1:
+#                 return l[j]
+#
+# grades = [
+#     {'name': 'Kenneth', 'score': 3}, {'name': 'Bebe', 'score': 41}, {'name': 'Joyce', 'score': 24},
+#     {'name': 'Richard', 'score': 37}, {'name': 'Marian', 'score': 44}, {'name': 'Jana', 'score': 45},
+#     {'name': 'Sarah', 'score': 90}, {'name': 'Eddie', 'score': 2}, {'name': 'Mary', 'score': 63},
+#     {'name': 'Ronald', 'score': 15}, {'name': 'David', 'score': 44}, {'name': 'Richard', 'score': 78},
+#     {'name': 'Warren', 'score': 7}, {'name': 'Alyssa', 'score': 13}, {'name': 'Lloyd', 'score': 52},
+#     {'name': 'Vanessa', 'score': 6}, {'name': 'Karen', 'score': 40}, {'name': 'James', 'score': 54},
+#     {'name': 'Annie', 'score': 87}, {'name': 'Glenn', 'score': 9}, {'name': 'Bruce', 'score': 68},
+#     {'name': 'Ramona', 'score': 64}, {'name': 'Jeannie', 'score': 22}, {'name': 'Aaron', 'score': 3},
+#     {'name': 'Ronnie', 'score': 47}, {'name': 'William', 'score': 94}, {'name': 'Sandra', 'score': 40},
+# ]
+#
+# for_dict(grades)
+# print(sorted(grades, key= lambda elem: elem))
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# Регулярные выражения.
+# import re
+#
+#
+# text = 'How much wood would a woodchuck chuck if a woodchuck could chuck wood?'
+# # Определить, начинается ли текст с шаблона wo.
+# print(re.match(r'wo', text))
+# # Найти первое упоминание шаблона wo в тексте.
+# print(re.search(r'wo', text))
+# # Определить содержимое найденной по шаблону подстроки из пункта 2.
+# print(re.search(r'wo', text).group())
+# # Найти позицию, с которого начинается первое упоминание шаблона wo.
+# print(re.search(r'wo', text).start())
+# # Найти позицию, на которой заканчивается первое упоминание шаблона wo.
+# print(re.search(r'wo', text).end())
+# # Получить список из каждого упоминания шаблона wo в тексте.
+# print(re.findall(r'wo', text))
+# # Заменить в тексте все совпадения по шаблону wo на слово «ЗАМЕНА».
+# print(re.sub('wo', 'ЗАМЕНА', text))
+# import re
+#
+#
+# text = 'How much \wwood+?, would a \wwood+?chuck \dwwood+, chuck if a \wwood+?,chuck could chuck \wwood?'
+# print(re.findall(r'\\wwood\+\?,', text))
+# import re
+#
+#
+# text = 'Even if they are djinns, I will get djinns that can outdjinn them.'
+# pattern = r'\b[aeiouAEIOU]\w*'
+# res_2 = re.findall(r'\b[^ aeiouAEIOU]\w+', text)
+# res = re.findall(pattern, text)
+# print(res_2)
+# print(res)
+# import re
+#
+#
+# text = 'Amit 34-3456 12-05-2007, XYZ 56-4532 11-11-2011, ABC 67-8945 12-01-2009'
+#
+# res = re.findall(r'\d{2,2}-\d{2,2}-\d{4,4}', text)
+# print(res)
+# |||||||||||||||||||||||||||||||||||||||||
+# Запросы
+# import requests
+# import json
+#
+#
+# req_1 = requests.get('https://swapi.dev/api/people/3/')
+# data = json.loads(req_1.text)
+# print(data)
