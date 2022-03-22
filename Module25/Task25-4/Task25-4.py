@@ -18,73 +18,82 @@ class Person:
 
 
 class Employee(Person):
+
+    def __init__(self, name, surname, age):
+        super().__init__(name, surname, age)
+        self.set_name(name)
+        self.set_surname(surname)
+        self.set_age(age)
+        self.__salary = 0
+        self.__dolzhnost = ''
+
+    def set_name(self, data):
+        self.__name = data
+
+    def set_surname(self, data):
+        self.__surname = data
+
+    def set_age(self, data):
+        self.__age = data
+
+    def set_dolzhnost(self, string):
+        self.__dolzhnost = string
+
+    def set_salary(self, number):
+        self.__salary = number
+
     def salary_out(self):
-        pass
+        self.set_salary(0)
+
+    def get_name(self):
+        return self.__name
+
+    def get_surname(self):
+        return self.__surname
+
+    def __str__(self):
+        return '{} {} {} - зарплата {}'.format(self.__dolzhnost, self.get_name(), self.get_surname(), self.__salary)
 
 
 class Manager(Employee):
-    def __init__(self,name, surname, age):
-        super(Manager, self).__init__(name, surname, age)
-
-    def get_name(self):
-        return self.__name
+    def __init__(self, name, surname, age):
+        super().__init__(name, surname, age)
+        self.set_dolzhnost('Управляющицй')
 
     def salary_out(self):
-        self.salary = 13000
-
-    def __str__(self):
-        return 'Зарплата управляющего {} - {}'.format(self.get_name(), self.salary)
+        self.set_salary(13000)
 
 
 class Agent(Employee):
-    def __init__(self,name, surname, age, plan):
-        super(Agent, self).__init__(name, surname, age)
+    def __init__(self, name, surname, age, plan):
+        super().__init__(name, surname, age)
         self.plan = plan
-
-    def get_name(self):
-        return self.__name
+        self.set_dolzhnost('Агент')
 
     def salary_out(self):
-        self.salary = 5000 + self.plan/100*5
-
-    def __str__(self):
-        return 'Зарплата агента {} - {}'.format(self.get_name(), self.salary)
+        self.set_salary(5000 + self.plan/100*5)
 
 
 class Worker(Employee):
     def __init__(self, name, surname, age, hours):
-        super(Worker, self).__init__(name, surname, age)
+        super().__init__(name, surname, age)
         self.hours = hours
-
-    def get_name(self):
-        return self.__name
+        self.set_dolzhnost('Рабочий')
 
     def salary_out(self):
-        self.salary = 100 * self.hours
-
-    def __str__(self):
-        return 'Зарплата рабочего {} - {}'.format(self.get_name(), self.salary)
+        self.set_salary(100 * self.hours)
 
 
 persona_1 = Manager('Ваня', 'Иванов', 20)
-persona_1.salary_out()
 persona_2 = Manager('Петя', 'Петров', 21)
-persona_2.salary_out()
 persona_3 = Manager('Коля', 'Николаев', 22)
-persona_3.salary_out()
 persona_4 = Agent('Саша', 'Александров', 23, 10e6)
-persona_4.salary_out()
 persona_5 = Agent('Боря', 'Борисов', 24, 10e5)
-persona_5.salary_out()
 persona_6 = Agent('Мирон', 'Миронов', 25, 15e5)
-persona_6.salary_out()
 persona_7 = Worker('Матвей', 'Матвеев', 26, 120)
-persona_7.salary_out()
 persona_8 = Worker('Леша', 'Алексеев', 27, 110)
-persona_8.salary_out()
 persona_9 = Worker('Дима', 'Дмитриев', 28, 130)
-persona_9.salary_out()
-list = [
+list_ = [
     persona_1,
     persona_2,
     persona_3,
@@ -95,5 +104,6 @@ list = [
     persona_8,
     persona_9
 ]
-for i in list:
+for i in list_:
+    i.salary_out()
     print(i.__str__())
