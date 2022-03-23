@@ -1,11 +1,68 @@
 import telebot
+from telebot import types
 import requests
 
 
 bot = telebot.TeleBot('5246923628:AAGR1ONt2gFZ8vQoqz6I4TpL7cAiPVaNQfg')
+info = dict()
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
     bot.send_message(message.chat.id, 'Привет, {name}!'.format(name=message.from_user.first_name))
+
+
+@bot.message_handler(commands=['lowprice'])
+def lowprice(message):
+    bot.send_message(message.chat.id, 'Давайте начнем')
+    get_message(message)
+
+@bot.message_handler(content_types=['text'])
+def get_message(message):
+    # Город, где будет проводиться поиск.
+    bot.send_message(message.chat.id, 'В каком городе подобрать отель?')
+    bot.register_next_step_handler(message, get_city)
+
+def get_city(message):
+    info['city'] = message.text
+    bot.send_message(message.chat.id, 'Укажите кол-во отелей (не больше пяти)')
+    bot.register_next_step_handler(message, get_amount)
+
+def get_amount(message):
+    global info
+    # 2. Количество отелей, которые необходимо вывести в результате(не больше заранее определённого максимума).
+    # bot.send_message(message.chat.id, 'Укажите кол-во отелей (не больше пяти)')
+    # while int(message.text) > 5:
+    #     bot.send_message(message.chat.id, 'Кол-во отелей должно быть не больше пяти)')
+    info['amount'] = message.text
+    bot.send_message(message.chat.id, 'Загрузить фото по отелям?')
+    bot.register_next_step_handler(message, get_foto)
+
+def get_foto(message):
+    if message.text == 'Да':
+    # 3. Необходимость загрузки и вывода фотографий для каждого отеля(“Да / Нет”)
+    # bot.send_message(message.chat.id, 'Загрузить фото по отелям?')
+        bot.send_message(message.chat.id, 'Сколько фото(не больше пяти)?')
+        bot.register_next_step_handler(message, get_foto_amount)
+
+
+def get_foto_amount(message):
+    global info
+    # if message.text == 'Да':
+        # bot.send_message(message.chat.id, 'Сколько фото(не больше пяти)?')
+    info['foto_amount'] = message.text
+        # a.При положительном ответе пользователь также вводит количество необходимых фотографий(не больше заранее
+        #         определённого максимума)
+    keyboard = types.InlineKeyboardMarkup()
+    key_yes = types.InlineKeyboardButton(text='Да', callback_data='Yes')
+    keyboard.add(key_yes)
+    key_no = types.InlineKeyboardButton(text='Нет', callback_data='No')
+    keyboard.add(key_no)
+    info_all = 'Ищем {amount} отелей в городе {city} с {foto_amount} фото'.format(
+        amount=info['amount'],
+        city=info['city'],
+        foto_amount=info['foto_amount']
+    )
+    bot.send_message(message.from_user.id, text=info_all, reply_markup=keyboard)
+
 
 bot.polling(none_stop=True)
