@@ -1,13 +1,11 @@
 import telebot
-bot = telebot.TeleBot('5246923628:AAGR1ONt2gFZ8vQoqz6I4TpL7cAiPVaNQfg')
+import requests
 
-@bot.message_handler(content_types=['text'])
-def get_text_messages(message):
-    if message.text == "Привет":
-        bot.send_message(message.from_user.id, "Привет, чем я могу тебе помочь?")
-    elif message.text == "/help":
-        bot.send_message(message.from_user.id, "Напиши привет")
-    else:
-        bot.send_message(message.from_user.id, "Я тебя не понимаю. Напиши /help.")
 
-bot.polling(none_stop=True, interval=0)
+bot = telebot.TeleBot('5246923628:AAGR10Nt2gFZ8vQoqz6I4TpL7cAiPVaNQfg')
+
+@bot.message_handler(commands=['start'])
+def welcome(message):
+    bot.send_message(message.chat.id, 'Привет, {name}!'.format(name=message.from_user))
+
+bot.polling(none_stop=True)
