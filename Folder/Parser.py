@@ -4,7 +4,7 @@ import re
 import requests
 
 # data: dict
-def parsing():
+def parsing(dict):
 	url = "https://hotels4.p.rapidapi.com/locations/v2/search"
 	querystring = {"query":"new york","locale":"en_US","currency":"USD"}
 	headers = {
@@ -12,6 +12,8 @@ def parsing():
 		"X-RapidAPI-Key": "7fa207022cmsh412a4ad33fcf0b9p16a1a3jsn22b953c844ee"
 	}
 	response = requests.request("GET", url, headers=headers, params=querystring)
-	print(response.text)
+	return 'А вот и результат'
 
-parsing()
+if __name__ == '__main__':
+
+	parsing(dict)

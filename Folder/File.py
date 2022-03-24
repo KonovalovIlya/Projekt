@@ -1,5 +1,6 @@
 import telebot
 from telebot import types
+from Parser import parsing
 import requests
 
 
@@ -65,4 +66,14 @@ def get_foto_amount(message):
     bot.send_message(message.from_user.id, text=info_all, reply_markup=keyboard)
 
 
-bot.polling(none_stop=True)
+@bot.callback_query_handler(func=lambda call: True)
+def callback_worker(call):
+    global info
+    if call.data == "Yes": #call.data это callback_data, которую мы указали при объявлении кнопки
+        res = parsing(info)#код сохранения данных, или их обработки
+        bot.send_message(call.message.chat.id, res)
+    elif call.data == "No":
+         pass #переспрашиваем
+
+if __name__ == '__main__':
+    bot.polling(none_stop=True)
