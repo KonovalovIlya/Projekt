@@ -35,6 +35,14 @@ def get_amount(message):
     # while int(message.text) > 5:
     #     bot.send_message(message.chat.id, 'Кол-во отелей должно быть не больше пяти)')
     info['amount'] = message.text
+    bot.send_message(message.chat.id, 'Укажите даты въезда и выезда через запятую в формате гггг-мм-дд')
+    bot.register_next_step_handler(message, get_date)
+
+
+def get_date(message):
+    global info
+    info['check_in'] = message.text.split(', ')[0]
+    info['check_out'] = message.text.split(', ')[1]
     bot.send_message(message.chat.id, 'Загрузить фото по отелям?')
     bot.register_next_step_handler(message, get_foto)
 
@@ -43,6 +51,8 @@ def get_foto(message):
     # 3. Необходимость загрузки и вывода фотографий для каждого отеля(“Да / Нет”)
     # bot.send_message(message.chat.id, 'Загрузить фото по отелям?')
         bot.send_message(message.chat.id, 'Сколько фото(не больше пяти)?')
+        bot.register_next_step_handler(message, get_foto_amount)
+    else:
         bot.register_next_step_handler(message, get_foto_amount)
 
 
@@ -71,7 +81,16 @@ def callback_worker(call):
     global info
     if call.data == "Yes": #call.data это callback_data, которую мы указали при объявлении кнопки
         res = parsing(info)#код сохранения данных, или их обработки
-        bot.send_message(call.message.chat.id, res)
+        for i in range(3):
+            bot.send_message(
+                call.message.chat.id, 'Отель - {name}, адрес - {street}, расстояние от центра - {distance}, '
+                                      'цена за ночь - {price}, стоимость за указанные даты - {price_for_all}'.format(
+                    name=res[i][0],
+                    street=res[i][1],
+                    distance=res[i][2],
+                    price=res[i][3],
+                    price_for_all=res[i][4]
+                ))
     elif call.data == "No":
          pass #переспрашиваем
 
