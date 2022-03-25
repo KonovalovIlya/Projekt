@@ -50,7 +50,7 @@ def get_foto_amount(message):
     global info
     # if message.text == 'Да':
         # bot.send_message(message.chat.id, 'Сколько фото(не больше пяти)?')
-    info['foto_amount'] = message.text
+    info['foto_amount'] = int(message.text)
         # a.При положительном ответе пользователь также вводит количество необходимых фотографий(не больше заранее
         #         определённого максимума)
     keyboard = types.InlineKeyboardMarkup()

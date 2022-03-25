@@ -1,10 +1,10 @@
 import json
 import re
-
 import requests
 
+
 # data: dict
-def parsing(dict):
+def parsing(dict_):
 	url = "https://hotels4.p.rapidapi.com/locations/v2/search"
 	querystring = {"query":"new york","locale":"en_US","currency":"USD"}
 	headers = {
@@ -26,6 +26,16 @@ def parsing(dict):
 	response_2 = requests.request("GET", url, headers=headers, params=querystring)
 	data_2 = json.loads(response_2.text)
 	result_2 = recursion_2(data_2)
+	with open('list_hotels.json', 'w') as file:
+		json.dump(result_2, file, indent=4)
+	f = dict_['foto_amount']
+	print(type(f))
+	# result_2 = result_2[:int(dict_['foto_amount'])]
+	# print(result_2)
+	# list_2 = []
+	# for i in result_2:
+	# 	list_2.append(i['name'])
+	# return list_2
 	# return recursion(data_1)
 
 
