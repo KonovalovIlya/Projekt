@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main</title>
+</head>
+<body>
+    <form>
+        <div>Выберите категорию</div>
+        <div>
+            <select name="categories">
+                {% for i in categories %}
+                    <option>{{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>Выберите город</div>
+        <div>
+            <select name="cities">
+                {% for i in cities %}
+                    <option>{{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            Введите название объявления
+            <input maxlength="25" size="40">
+        </div>
+        <div>
+            <input type="button" value=" Найти ">
+        </div>
+    </form>
+</body>
+</html>
