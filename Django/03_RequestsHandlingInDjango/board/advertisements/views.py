@@ -18,7 +18,7 @@ class Advertisements(View):
             'Услуги экскаватора-погрузчика, гидромолота, ямобура - 1500 в час'
             'Продам почку за тарелку супа'
         ]
-        return render(request, 'advertisements/advertisements.html', {'advertisements': self.list_})
+        return render(request, 'advertisements/advertisement_detail.html', {'advertisements': self.list_})
 
     def post(self, request):
         return 'Запрос на создание новой записи успешно выполнен.'
