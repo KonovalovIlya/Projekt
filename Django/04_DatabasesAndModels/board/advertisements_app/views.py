@@ -8,7 +8,7 @@ from django.views import generic
 #     return render(request, 'advertisements_app/advertisement1.html', {'advertisements': advertisements})
 
 
-class AdvertisementsListView(generic.ListView):
+class AdvertisementListView(generic.ListView):
     model = Advertisement
     template_name = 'advertisements_list.html'
     context_object_name = 'advertisements_list'
