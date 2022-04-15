@@ -1,0 +1,10 @@
+URLS = [
+    "https://hotels4.p.rapidapi.com/locations/v2/search",
+    "https://hotels4.p.rapidapi.com/properties/list",
+    "https://hotels4.p.rapidapi.com/properties/get-hotel-photos"
+]
+
+HEADERS = {
+    "X-RapidAPI-Host": "hotels4.p.rapidapi.com",
+    "X-RapidAPI-Key": "4db861a9eamsh38ac486b3fce417p10e352jsn3becddc3e8f3"
+}
