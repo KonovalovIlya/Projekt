@@ -6,13 +6,13 @@ import settings
 
 
 def parsing(dict_: Dict = None) -> List:
-	'''
+	"""
 	Собирает данные об отелях и передает боту
 	:param dict_: Dict
 	:return: List
-	'''
+	"""
 	locations_search_url = settings.URLS[0]
-	querystring = {"query":dict_.get('city'),}
+	querystring = {"query": dict_.get('city')}
 	locations_search_response = requests.request(
 		"GET",
 		locations_search_url,
@@ -25,7 +25,9 @@ def parsing(dict_: Dict = None) -> List:
 
 	list_hotels_url = settings.URLS[1]
 	querystring = {
-		"destinationId": locations_search_result[1], "checkIn": dict_['check_in'], "checkOut": dict_['check_out']
+		"destinationId": locations_search_result[1],
+		"checkIn": dict_['check_in'],
+		"checkOut": dict_['check_out']
 	}
 	list_hotels_response = requests.request(
 		"GET",
@@ -53,7 +55,7 @@ def parsing(dict_: Dict = None) -> List:
 		with open('Photos.json', 'w') as photos:
 			json.dump(photos_data, photos, indent=4)
 		photos_result = recursion_photos(photos_data)
-		photos_result = photos_result[:dict_.get('foto_amount')]
+		photos_result = photos_result[:dict_.get('photo_amount')]
 		photos_list.append(photos_result)
 
 	list_info = [list() for _ in range(int(dict_.get('amount')))]
@@ -72,12 +74,12 @@ def parsing(dict_: Dict = None) -> List:
 
 
 def recursion_locations_search(data_: Dict, dict_: Dict) -> List:
-	'''
+	"""
 	Определяет город, возвращает id города.
 	:param data_: Dict
 	:param dict_: Dict
 	:return: List
-	'''
+	"""
 	for i, j in data_.items():
 		if isinstance(j, list):
 			result = recursion_locations_search(j[0], dict_)
@@ -91,11 +93,11 @@ def recursion_locations_search(data_: Dict, dict_: Dict) -> List:
 
 
 def recursion_list_hotels(data_: Dict) -> List:
-	'''
+	"""
 	Собирает список отелей
 	:param data_: Dict
 	:return: List
-	'''
+	"""
 	for i, j in data_.items():
 		if isinstance(j, dict):
 			result = recursion_list_hotels(j)
@@ -111,11 +113,11 @@ def recursion_list_hotels(data_: Dict) -> List:
 
 
 def recursion_photos(data_: Dict) -> List:
-	'''
+	"""
 	Собирает список фото
 	:param data_: Dict
 	:return: List
-	'''
+	"""
 	list_photos = []
 	for i in data_.get('hotelImages'):
 		url = i.get('baseUrl').split('{size}')

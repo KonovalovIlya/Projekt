@@ -8,3 +8,5 @@ HEADERS = {
     "X-RapidAPI-Host": "hotels4.p.rapidapi.com",
     "X-RapidAPI-Key": "4db861a9eamsh38ac486b3fce417p10e352jsn3becddc3e8f3"
 }
+
+KEY = '5246923628:AAGR1ONt2gFZ8vQoqz6I4TpL7cAiPVaNQfg'

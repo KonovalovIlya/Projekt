@@ -1,10 +1,10 @@
 import telebot
 from telebot import types
 from Parser import parsing
-import requests
+import settings
 
 
-bot = telebot.TeleBot('5246923628:AAGR1ONt2gFZ8vQoqz6I4TpL7cAiPVaNQfg')
+bot = telebot.TeleBot(settings.KEY)
 info = dict()
 
 
@@ -15,23 +15,30 @@ def welcome(message):
 
 @bot.message_handler(commands=['lowprice'])
 def lowprice(message):
+    '''
+    Подбирает самые дешовые отели.
+    '''
     bot.send_message(message.chat.id, 'Давайте начнем')
     get_message(message)
 
 
 @bot.message_handler(content_types=['text'])
 def get_message(message):
-    # Город, где будет проводиться поиск.
+    '''
+    Город, где будет проводиться поиск.
+    '''
     bot.send_message(message.chat.id, 'В каком городе подобрать отель?')
     bot.register_next_step_handler(message, get_city)
 
 
+@bot.message_handler(content_types=['text'])
 def get_city(message):
     info['city'] = message.text
     bot.send_message(message.chat.id, 'Укажите кол-во отелей (не больше пяти)')
     bot.register_next_step_handler(message, get_amount)
 
 
+@bot.message_handler(content_types=['text'])
 def get_amount(message):
     # 2. Количество отелей, которые необходимо вывести в результате(не больше заранее определённого максимума).
     # bot.send_message(message.chat.id, 'Укажите кол-во отелей (не больше пяти)')
@@ -42,6 +49,7 @@ def get_amount(message):
     bot.register_next_step_handler(message, get_date)
 
 
+@bot.message_handler(content_types=['text'])
 def get_date(message):
     info['check_in'] = message.text.split(', ')[0]
     info['check_out'] = message.text.split(', ')[1]
@@ -49,6 +57,7 @@ def get_date(message):
     bot.register_next_step_handler(message, get_foto)
 
 
+@bot.message_handler(content_types=['text'])
 def get_foto(message):
     if message.text == 'Да':
     # 3. Необходимость загрузки и вывода фотографий для каждого отеля(“Да / Нет”)
@@ -59,10 +68,11 @@ def get_foto(message):
         bot.register_next_step_handler(message, get_photo_amount)
 
 
+@bot.message_handler(content_types=['text'])
 def get_photo_amount(message):
     # if message.text == 'Да':
         # bot.send_message(message.chat.id, 'Сколько фото(не больше пяти)?')
-    info['foto_amount'] = int(message.text)
+    info['photo_amount'] = int(message.text)
         # a.При положительном ответе пользователь также вводит количество необходимых фотографий(не больше заранее
         #         определённого максимума)
     keyboard = types.InlineKeyboardMarkup()
@@ -70,18 +80,18 @@ def get_photo_amount(message):
     keyboard.add(key_yes)
     key_no = types.InlineKeyboardButton(text='Нет', callback_data='No')
     keyboard.add(key_no)
-    info_all = 'Ищем {amount} отелей в городе {city} с {foto_amount} фото'.format(
+    info_all = 'Ищем {amount} отелей в городе {city} с {photo_amount} фото'.format(
         amount=info['amount'],
         city=info['city'],
-        foto_amount=info['foto_amount']
+        photo_amount=info['photo_amount']
     )
     bot.send_message(message.from_user.id, text=info_all, reply_markup=keyboard)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
-    if call.data == "Yes": #call.data это callback_data, которую мы указали при объявлении кнопки
-        res = parsing(info)#код сохранения данных, или их обработки
+    if call.data == "Yes":
+        res = parsing(info)
         if '$' in res[0][4]:
             for i in range(int(info.get('amount'))):
                 bot.send_message(
