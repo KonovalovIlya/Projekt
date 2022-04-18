@@ -1,7 +1,0 @@
-Василий test@test.ru 27
-Базилий test@teeesrst.ru 55
-Василий27 test@test.ru 27
-Василий test@testru 27
-Василий test@test.ru27
-Василий test@test.ru 111
-Василий27 test@testru 127
