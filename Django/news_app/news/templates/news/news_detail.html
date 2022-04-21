@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ news_detail.title }}</title>
+    <title>{{ object.title }}</title>
 </head>
 <body>
-    <h1>{{ news_detail.title }}</h1>
-    <div>{{ news_detail.content }}</div>
-    <div>{{ news_detail.interest }}</div>
+    <h1>{{ object.title }}</h1>
+    <div>{{ object.content }}</div>
+    <div>{{ object.interest }}</div>
+    <form action="/news/{{ object.id }}/redactor/">
+    <button type="submit">Редактировать</button>
+    </form>
 </body>
 </html>

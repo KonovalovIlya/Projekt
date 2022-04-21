@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Публикация говости</title>
 </head>
 <body>
-
+    <h1>Новость</h1>
+    <form method="post" action="/news/register/">
+        {% csrf_token %}
+        {{ news_form.as_p }}
+        <button type="submit">Опубликовать</button>
+    </form>
 </body>
 </html>
