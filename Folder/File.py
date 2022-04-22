@@ -19,6 +19,17 @@ def lowprice(message):
     '''
     Подбирает самые дешовые отели.
     '''
+    info['command'] = 'lowprice'
+    bot.send_message(message.chat.id, 'Давайте начнем')
+    get_message(message)
+
+
+@bot.message_handler(commands=['highprice'])
+def highprice(message):
+    '''
+    Подбирает самые дорогие отели.
+    '''
+    info['command'] = 'highprice'
     bot.send_message(message.chat.id, 'Давайте начнем')
     get_message(message)
 
