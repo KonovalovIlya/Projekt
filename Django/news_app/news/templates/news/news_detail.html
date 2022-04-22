@@ -14,13 +14,15 @@
     <div>
         <h2>Комментарии</h2>
             {% if comment_list %}
-                {% for comment in comment_list %}
                 <ul>
-                    <li>
-                        {{ comment.comment }}
-                    </li>
+                    {% for comment in comment_list %}
+                        {% if comment.news.id == object.id %}
+                            <li>
+                                {{ comment.comment }}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
                 </ul>
-                {% endfor %}
             {% else %}
                 <p>Комментариев пока нет</p>
             {% endif %}
