@@ -39,7 +39,10 @@ def parsing(dict_: Dict = None) -> List:
 	with open('list_hotels.json', 'w') as hotels:
 		json.dump(list_hotels_data, hotels, indent=4)
 	list_hotels_result = recursion_list_hotels(list_hotels_data)
-	list_hotels_result = list_hotels_result[:int(dict_.get('amount'))]
+	if dict_.get('command') == 'lowprice':
+		list_hotels_result = list_hotels_result[:int(dict_.get('amount'))]
+	elif dict_.get('command') == 'highprice':
+		list_hotels_result = list_hotels_result[-(int(dict_.get('amount'))):]
 
 	photos_url = settings.URLS[2]
 	photos_list = []
