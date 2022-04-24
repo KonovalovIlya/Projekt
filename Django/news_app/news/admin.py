@@ -2,6 +2,7 @@ from django.contrib import admin
 from news.models import News, Comment
 # Register your models here.
 
+
 class CommentInLine(admin.StackedInline):
     model = Comment
 
