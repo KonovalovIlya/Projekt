@@ -1,9 +1,11 @@
 from django.shortcuts import render
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib import auth
 from django.views import generic, View
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from news.models import News, Comment
-from news.forms import NewsForm, CommentForm
+from news.forms import NewsForm, CommentForm, AuthForm
 
 
 # Create your views here.
@@ -75,28 +77,9 @@ class NewsFormEditView(View):
         return render(request, 'news/news_form_redactor.html', context={'news_form': news_form, 'news_id': news_id})
 
 
-# class CommentFormView(View):
-#     # def get(self, request, news_id):
-#     #     news = News.objects.get(id=news_id)
-#     #     news_form = NewsForm(instance=news)
-#     #     return render(request, 'news/news_form_redactor.html', context={'news_form': news_form, 'news_id': news_id})
-#
-#     # def post(self, request, comment):
-#     #     comment = Comment.objects.get(id=comment_id)
-#     #     comment_form = CommentForm(request.POST, instance=comment)
-#     #
-#     #     if comment_form.is_valid():
-#     #         comment.save()
-#     #     return render(request, 'news/news_detail.html', context={'comment_form': comment_form, 'comment_id': comment_id})
-#
-#     def get(self, request):
-#         comment_form = CommentForm()
-#         return render(request, 'news/news_detail.html', {'comment_form': comment_form})
-#
-#     def post(self, request):
-#         comment_form = CommentForm(request.POST)
-#
-#         if comment_form.is_valid():
-#             Comment.objects.create(**comment_form.cleaned_data)
-#             return HttpResponseRedirect('/')
-#         return render(request, 'news/news_detail.html', {'comment_form': comment_form})
+class LoginView(LoginView):
+    template_name = 'news/login.html'
+
+
+class LogoutView(LogoutView):
+    next_page = '/'
