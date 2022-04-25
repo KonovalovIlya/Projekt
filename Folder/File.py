@@ -34,6 +34,26 @@ def highprice(message):
     get_message(message)
 
 
+@bot.message_handler(commands=['bestdeal'])
+def bestdeal(message):
+    '''
+    Подбирает отели c лучшими совпадениями.
+    '''
+    info['command'] = 'bestdeal'
+    bot.send_message(message.chat.id, 'Давайте начнем')
+    get_message(message)
+
+
+@bot.message_handler(commands=['history'])
+def history(message):
+    '''
+    История запросов.
+    '''
+    with open('log.txt', 'r') as log_file:
+        history = log_file.readlines()
+    bot.send_message(message.chat.id, '{}'.format(history))
+
+
 @bot.message_handler(content_types=['text'])
 def get_message(message):
     """

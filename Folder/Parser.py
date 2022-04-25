@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import re
 import requests
@@ -72,6 +73,7 @@ def parsing(dict_: Dict = None) -> List:
 			print(ppd)
 			list_info[list_hotels_result.index(i)].append(ppd)
 		list_info[list_hotels_result.index(i)].extend(photos_list[list_hotels_result.index(i)])
+	logging(list_info)
 
 	return list_info
 
@@ -128,6 +130,21 @@ def recursion_photos(data_: Dict) -> List:
 		list_photos.append(url)
 
 	return list_photos
+
+
+def logging(list_ : List):
+	with open('log.txt', 'a') as log_file:
+		log_file.write('{}\n'.format(datetime.utcnow()))
+		for i in list_:
+			if not isinstance(i, list):
+				log_file.write(i)
+				log_file.write('\n')
+			else:
+				for j in i:
+					log_file.write(j)
+					log_file.write('\n')
+			log_file.write('\n')
+		log_file.write('\n'*2)
 
 
 if __name__ == '__main__':
