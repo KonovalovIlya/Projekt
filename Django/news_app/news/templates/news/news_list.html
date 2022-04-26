@@ -5,6 +5,12 @@
     <title>Новости</title>
 </head>
 <body>
+    {% if request.user.is_authenticated %}
+        <h3>Вы вошли как {{ request.user.username }}</h3>
+        <a href="{% url 'logout' %}">Выйти</a>
+    {% else %}
+        <a href="{% url 'login' %}">Войти</a>
+    {% endif %}
     <h1>Новости</h1>
     {% if news_list %}
         {% for news in news_list %}
