@@ -5,6 +5,7 @@
     <title>{{ news.title }}</title>
 </head>
 <body>
+    <a href="/">На главную</a>
     <h1>{{ news.title }}</h1>
     <div>{{ news.content }}</div>
     <div>
@@ -19,13 +20,18 @@
     </form>
     <div>
         <h2>Комментарии</h2>
+        <form action="/news/{{ news.id }}/comment_new/">
+            <button type="submit">Оставить комментарий</button>
+        </form>
             {% if comment_list %}
                 <ul>
                     {% for comment in comment_list %}
                         {% if comment.news.id == object.id %}
                             <li>
-                                <h5>{{ comment.user_name }}</h5>
-                                {{ comment.comment }}
+
+                                    <h5>{{ comment.user }}</h5>
+                                    {{ comment.comment }}
+
                             </li>
                         {% endif %}
                     {% endfor %}
@@ -34,9 +40,7 @@
                 <p>Комментариев пока нет</p>
             {% endif %}
 
-        <form action="/news/comment_new/">
-            <button type="submit">Оставить комментарий</button>
-        </form>
+
     </div>
 </body>
 </html>

@@ -1,11 +1,7 @@
 from django.db import models
-from news_app.forms import AuthForm
-
+from django.contrib.auth.models import User
 
 # Create your models here.
-class Auth(models.Model):
-    username = models.CharField(max_length=20)
-    password = models.CharField(max_length=30)
 
 
 class News(models.Model):
@@ -17,7 +13,14 @@ class News(models.Model):
 
 
 class Comment(models.Model):
-    user_name = models.CharField(verbose_name='Имя пользователя', max_length=100)
+    user = models.ForeignKey(
+        User,
+        verbose_name='Пользователь',
+        default=None, null=True,
+        on_delete=models.CASCADE,
+        related_name='user'
+    )
+    anonusername = models.CharField(verbose_name='Имя пользователя', max_length=100)
     comment = models.TextField(verbose_name='Комментарий', max_length=1000)
     news = models.ForeignKey(
         'News',
@@ -25,12 +28,5 @@ class Comment(models.Model):
         default=None, null=True,
         on_delete=models.CASCADE,
         related_name='news'
-    )
-    user = models.ForeignKey(
-        'AuthForm',
-        verbose_name='Пользователь',
-        default=None, null=True,
-        on_delete=models.CASCADE,
-        related_name='user'
     )
 

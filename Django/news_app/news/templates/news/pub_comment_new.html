@@ -6,9 +6,12 @@
 </head>
 <body>
     <h1>Комментарий</h1>
-    <form method="post">
+    <form method="post" action="/news/comment_new/">
         {% csrf_token %}
-        {{ comment_form.as_p }}
+        {% if user.is_authenticated %}
+            {{ comment_form.as_p }}
+        {% endif %}
+
         <button type="submit">Отправить</button>
     </form>
 </body>
