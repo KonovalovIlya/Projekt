@@ -18,7 +18,9 @@ class Comment(models.Model):
         verbose_name='Пользователь',
         default=None, null=True,
         on_delete=models.CASCADE,
-        related_name='user'
+        related_name='user',
+        blank=True
+
     )
     anonusername = models.CharField(verbose_name='Имя пользователя', max_length=100)
     comment = models.TextField(verbose_name='Комментарий', max_length=1000)
@@ -27,6 +29,7 @@ class Comment(models.Model):
         verbose_name='Новость',
         default=None, null=True,
         on_delete=models.CASCADE,
-        related_name='news'
+        related_name='news',
+        blank=True
     )
 

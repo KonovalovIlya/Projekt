@@ -28,9 +28,13 @@
                     {% for comment in comment_list %}
                         {% if comment.news.id == object.id %}
                             <li>
-
+                                {% if comment.user.is_authenticated %}
                                     <h5>{{ comment.user }}</h5>
                                     {{ comment.comment }}
+                                {% else %}
+                                    <h5>{{ comment.anonusername }}</h5>
+                                    {{ comment.comment }}
+                                {% endif %}
 
                             </li>
                         {% endif %}

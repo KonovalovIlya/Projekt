@@ -1,6 +1,5 @@
 from django.contrib import admin
 from news.models import News, Comment
-# Register your models here.
 
 
 class CommentInLine(admin.StackedInline):
@@ -24,10 +23,9 @@ class NewsAdmin(admin.ModelAdmin):
     mark_as_false.short_description = 'Перевести в статус Не активна'
 
 
-# @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['user', 'comment', 'news']
-    list_filter = ['user']
+    list_display = ['user', 'anonusername', 'comment', 'news']
+    list_filter = ['user', 'anonusername']
 
     actions = ['delete',]
 
@@ -35,13 +33,6 @@ class CommentAdmin(admin.ModelAdmin):
         queryset.update(comment='Удалено администратором')
 
     delete.short_description = 'Удалить содержание комментария'
-
-    # exclude = ('user',)  # скрыть author поле, чтобы оно не отображалось в форме изменений
-    #
-    # def save_model(self, request, obj, form, change):
-    #     if not obj.pk:
-    #         obj.user = request.user
-    #     super().save_model(request, obj, form, change)
 
 
 admin.site.register(News, NewsAdmin)

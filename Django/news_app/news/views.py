@@ -1,15 +1,13 @@
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic, View
 from django.http import HttpResponseRedirect
-from django.http import HttpResponse
 from news.models import News, Comment
-from news.forms import NewsForm, CommentForm, AuthForm
-from django.contrib.auth.models import User
+from news.forms import NewsForm, CommentForm, AuthForm, RegisterForm
 
 
-# Create your views here.
 class NewsListView(generic.ListView):
     model = News
     template_name = 'news_list.html'
@@ -33,43 +31,39 @@ class NewsDetailView(generic.DetailView):
         return context
 
 
-# @login_required
-# LoginRequiredMixin,
 class CommentFormView(View):
-    # login_url = '../'
-    # redirect_field_name = 'redirect_to'
+
     def get(self, request, news_id):
         comment_form = CommentForm()
+        if request.user.is_authenticated:
+            del comment_form.fields['user']
+            del comment_form.fields['anonusername']
+            del comment_form.fields['news']
+        else:
+            del comment_form.fields['user']
+            del comment_form.fields['news']
         return render(request, 'news/comment_new.html', {'comment_form': comment_form, 'news_id': news_id})
-
 
     def post(self, request, news_id):
         comment_form = CommentForm(request.POST)
         news = News.objects.get(id=news_id)
+        if request.user.is_authenticated:
+            del comment_form.fields['user']
+            del comment_form.fields['anonusername']
+            del comment_form.fields['news']
+        else:
+            del comment_form.fields['user']
+            del comment_form.fields['news']
         if comment_form.is_valid():
             comment = comment_form.save(commit=False)
             if request.user.is_authenticated:
                 comment.user = request.user
             else:
-                comment.anonusername = 'anonim'.join(comment.anonusername)
-                # comment.user = request.user
+                comment.anonusername = ''.join(['anonim', comment.anonusername])
             comment.news = news
             comment.save()
             return HttpResponseRedirect('/')
         return render(request, 'news/comment_new.html', {'comment_form': comment_form, 'news_id': news_id})
-
-# class CommentFormForAllView(View):
-#
-#     def get(self, request):
-#         comment_form = CommentForm()
-#         return render(request, 'news/pub_comment_new.html', {'comment_form': comment_form})
-#
-#     def post(self, request):
-#         comment_form = CommentForm(request.POST)
-#         if comment_form.is_valid():
-#             return HttpResponseRedirect('/')
-#         return render(request, 'news/pub_comment_new.html', {'comment_form': comment_form})
-
 
 
 class NewsFormView(View):
@@ -114,18 +108,16 @@ class LogoutView(LogoutView):
     next_page = '/'
 
 
-# from django.shortcuts import render, redirect
-# from django.contrib.auth.decorators import login_required
-# from .forms import NewsContentForm
-#
-# # Create your views here.
-# def news(request):
-#     return render(request,'news/news.html')
-# @login_required
-# def makePost(request):
-#     form = NewsContentForm(request.POST or None)
-#     if request.method == "POST":
-#         new_post = form.save()
-#         print(form.cleaned_data.get('username'))
-#         return redirect('/news/')
-#     return render(request, 'news/makePost.html',locals())
+def register_view(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('/')
+    else:
+        form = RegisterForm()
+    return render(request, 'news/register.html', {'form': form})
