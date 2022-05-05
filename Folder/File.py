@@ -60,6 +60,31 @@ def get_message(message):
     Город, где будет проводиться поиск.
     """
     bot.send_message(message.chat.id, 'В каком городе подобрать отель?')
+    if info['command'] == 'bestdeal':
+        bot.register_next_step_handler(message, get_range_price)
+        print(info)
+    else:
+        bot.register_next_step_handler(message, get_city)
+
+
+@bot.message_handler(content_types=['text'])
+def get_range_price(message):
+    if message.text.isascii():
+        info['city'] = message.text
+        bot.send_message(message.chat.id, 'Укажите диапазон цен за ночь, через запятую')
+        print(info)
+        bot.register_next_step_handler(message, get_range_distance)
+    else:
+        bot.send_message(message.chat.id, 'В названии города используйте только латинские буквы')
+        get_message(message)
+
+
+
+@bot.message_handler(content_types=['text'])
+def get_range_distance(message):
+    info['range_price'] = message.text.split(', ')
+    bot.send_message(message.chat.id, 'Укажите расстояние от центра в милях')
+    print(info)
     bot.register_next_step_handler(message, get_city)
 
 
@@ -68,13 +93,20 @@ def get_city(message):
     """
     Определяет количество отелей оп которым необходимо собрать информацию
     """
-    if message.text.isascii():
-        info['city'] = message.text
+    if info['command'] == 'bestdeal':
+        info['range_distance'] = float(message.text)
         bot.send_message(message.chat.id, 'Укажите кол-во отелей (не больше пяти)')
+        print(info)
         bot.register_next_step_handler(message, get_amount)
     else:
-        bot.send_message(message.chat.id, 'В названии города используйте только латинские буквы')
-        get_message(message)
+        if message.text.isascii():
+            info['city'] = message.text
+            bot.send_message(message.chat.id, 'Укажите кол-во отелей (не больше пяти)')
+            bot.register_next_step_handler(message, get_amount)
+        else:
+            bot.send_message(message.chat.id, 'В названии города используйте только латинские буквы')
+            get_message(message)
+
 
 
 @bot.message_handler(content_types=['text'])
@@ -151,6 +183,7 @@ def callback_worker(call):
     """
     if call.data == "Yes":
         res = parsing(info)
+        print(res)
         if '$' in res[0][4]:
             for i in range(int(info.get('amount'))):
                 bot.send_message(

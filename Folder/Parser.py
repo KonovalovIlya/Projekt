@@ -22,14 +22,23 @@ def parsing(dict_: Dict = None) -> List:
 	)
 	locations_search_data = json.loads(locations_search_response.text)
 	locations_search_result = recursion_locations_search(locations_search_data, dict_)
-	print(locations_search_result)
 
 	list_hotels_url = settings.URLS[1]
-	querystring = {
-		"destinationId": locations_search_result[1],
-		"checkIn": dict_['check_in'],
-		"checkOut": dict_['check_out']
-	}
+	if dict_['range_price']:
+		querystring = {
+			"destinationId": locations_search_result[1],
+			"checkIn": dict_['check_in'],
+			"checkOut": dict_['check_out'],
+			"priceMin": dict_['range_price'][0],
+			"priceMax": dict_['range_price'][1],
+			"sortOrder": 'DISTANCE_FROM_LANDMARK',
+		}
+	else:
+		querystring = {
+			"destinationId": locations_search_result[1],
+			"checkIn": dict_['check_in'],
+			"checkOut": dict_['check_out']
+		}
 	list_hotels_response = requests.request(
 		"GET",
 		list_hotels_url,
@@ -44,6 +53,16 @@ def parsing(dict_: Dict = None) -> List:
 		list_hotels_result = list_hotels_result[:int(dict_.get('amount'))]
 	elif dict_.get('command') == 'highprice':
 		list_hotels_result = list_hotels_result[-(int(dict_.get('amount'))):]
+	elif dict_.get('command') == 'bestdeal':
+		print(list_hotels_result)
+		list_hotels_result = sort_bestdeal(list_hotels_result, dict_)
+		print(list_hotels_result)
+		if len(list_hotels_result) >= int(dict_.get('amount'))+1:
+			list_hotels_result = list_hotels_result[:int(dict_.get('amount'))]
+			print(list_hotels_result)
+		else:
+			list_hotels_result = list_hotels_result
+			print(list_hotels_result)
 
 	photos_url = settings.URLS[2]
 	photos_list = []
@@ -76,6 +95,24 @@ def parsing(dict_: Dict = None) -> List:
 	logging(list_info)
 
 	return list_info
+
+
+def sort_bestdeal(list_: List, dict_: Dict):
+	"""
+		Собирает список отелей для команды bestdeal
+		:param data_: List
+		:return: List
+		"""
+	range_distance = dict_.get('range_distance')
+	list_res = []
+	p = r'\d{2}\.\d*'
+	for i in list_:
+		s = i.get("landmarks")[0].get("distance")
+		print(float(re.search(p, str(s)).group()))
+		if float(re.search(p, str(s)).group()) <= range_distance:
+			list_.append(i)
+	return list_
+
 
 
 def recursion_locations_search(data_: Dict, dict_: Dict) -> List:
