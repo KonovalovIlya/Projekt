@@ -7,7 +7,7 @@ class CommentInLine(admin.StackedInline):
 
 
 class NewsAdmin(admin.ModelAdmin):
-    list_display = ['title', 'created_at', 'updated_at', 'interest']
+    list_display = ['title', 'author', 'created_at', 'updated_at', 'interest']
     list_filter = ['interest']
     inlines = [CommentInLine]
 

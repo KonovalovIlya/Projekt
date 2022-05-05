@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views import generic, View
 from django.http import HttpResponseRedirect
-from news.models import News, Comment
+from news.models import News, Comment, Profile
 from news.forms import NewsForm, CommentForm, AuthForm, RegisterForm
 
 
@@ -76,7 +76,9 @@ class NewsFormView(View):
         news_form = NewsForm(request.POST)
 
         if news_form.is_valid():
-            News.objects.create(**news_form.cleaned_data)
+            news = News.objects.create(**news_form.cleaned_data)
+            request.user.profile.publish_count += 1
+            request.user.profile.save()
             return HttpResponseRedirect('/')
         return render(request, 'news/news_form.html', {'news_form': news_form})
 
@@ -112,12 +114,40 @@ def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            phone_number = form.cleaned_data.get('phone_number')
+            city = form.cleaned_data.get('city')
+            verification = form.cleaned_data.get('verification')
+            publish_count = form.cleaned_data.get('publish_count')
+            if publish_count is None:
+                publish_count = 0
+            Profile.objects.create(
+                user=user,
+                phone_number=phone_number,
+                city=city,
+                verification=verification,
+                publish_count=publish_count
+            )
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
             return redirect('/')
+        else:
+            form = RegisterForm()
+            if not request.user.is_authenticated:
+                del form.fields['verification']
+                del form.fields['publish_count']
+        return render(request, 'news/register.html', {'form': form})
     else:
         form = RegisterForm()
+        if not request.user.is_authenticated:
+            del form.fields['verification']
+            del form.fields['publish_count']
     return render(request, 'news/register.html', {'form': form})
+
+
+class ProfileDetailView(generic.DetailView):
+    model = Profile
+    context_object_name = 'profile'
+

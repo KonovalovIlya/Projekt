@@ -11,4 +11,5 @@ urlpatterns = [
     path('news/<int:news_id>/comment_new/', views.CommentFormView.as_view(), name='comment_form'),
     path('news/<int:news_id>/redactor/', views.NewsFormEditView.as_view(), name='news_form_redactor'),
     path('users/register/', views.register_view, name='register'),
+    path('users/profile/<int:pk>', views.ProfileDetailView.as_view(), name='profile'),
 ]
