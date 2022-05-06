@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль</title>
+</head>
+<body>
+    <h1>Профиль</h1>
+<!--    <form>{{ profile.as_p }}</form>-->
+
+    <div>Аккаунт: {{ profile.user }}</div>
+    <div>Имя: {{ profile.user.first_name }}</div>
+    <div>Фамилия: {{ profile.user.last_name }}</div>
+    <div>Номер телефона: {{ profile.phone_number }}</div>
+    <div>Город: {{ profile.city }}</div>
+    <div>Верификация: {{ profile.verification }}</div>
+    <div>Кол-во новостей: {{ profile.publish_count }}</div>
+</body>
+</html>

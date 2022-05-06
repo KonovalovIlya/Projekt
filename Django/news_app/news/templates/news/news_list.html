@@ -6,10 +6,13 @@
 </head>
 <body>
     {% if request.user.is_authenticated %}
-        <h3>Вы вошли как {{ request.user.username }}</h3>
+        <h3>Вы вошли как <a href="/users/profile/{{ user.profile.id }}">{{ request.user.username }}</a></h3>
         <a href="{% url 'logout' %}">Выйти</a>
     {% else %}
-        <a href="{% url 'login' %}">Войти</a>
+        <div>
+            <a href="{% url 'login' %}">Войти</a>
+            <a href="{% url 'register' %}">Зарегистрироваться</a>
+        </div>
     {% endif %}
     <h1>Новости</h1>
     {% if news_list %}
