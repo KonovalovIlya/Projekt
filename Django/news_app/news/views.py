@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views import generic, View
@@ -12,7 +13,7 @@ class NewsListView(generic.ListView):
     model = News
     template_name = 'news_list.html'
     context_object_name = 'news_list'
-    queryset = News.objects.all()[:10]
+    # queryset = News.objects.all()[:10]
 
 
 class CommentListView(generic.ListView):
@@ -69,7 +70,11 @@ class CommentFormView(View):
 class NewsFormView(View):
 
     def get(self, request):
+        if not request.user.has_perm('news.edit_news'):
+            raise PermissionDenied()
         news_form = NewsForm()
+        del news_form.fields['author']
+        del news_form.fields['interest']
         return render(request, 'news/news_form.html', {'news_form': news_form})
 
     def post(self, request):
@@ -77,6 +82,9 @@ class NewsFormView(View):
 
         if news_form.is_valid():
             news = News.objects.create(**news_form.cleaned_data)
+            news.author = request.user.profile
+            news.save()
+            print(news.author)
             request.user.profile.publish_count += 1
             request.user.profile.save()
             return HttpResponseRedirect('/')

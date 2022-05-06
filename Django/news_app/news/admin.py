@@ -27,7 +27,7 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ['user', 'anonusername', 'comment', 'news']
     list_filter = ['user', 'anonusername']
 
-    actions = ['delete',]
+    actions = ['delete']
 
     def delete(self, request, queryset):
         queryset.update(comment='Удалено администратором')

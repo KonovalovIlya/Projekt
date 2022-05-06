@@ -19,6 +19,13 @@ class News(models.Model):
     updated_at = models.DateTimeField(verbose_name='Дата обновления', auto_now=True)
     interest = models.BooleanField(verbose_name='Активность', default=False)
 
+    class Meta:
+        verbose_name = 'новость'
+        verbose_name_plural = 'новости'
+        permissions = (
+            ('edit', 'может добавлять'),
+        )
+
 
 class Comment(models.Model):
     user = models.ForeignKey(
