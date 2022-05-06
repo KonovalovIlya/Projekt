@@ -49,69 +49,83 @@ def parsing(dict_: Dict = None) -> List:
 	with open('list_hotels.json', 'w') as hotels:
 		json.dump(list_hotels_data, hotels, indent=4)
 	list_hotels_result = recursion_list_hotels(list_hotels_data)
-	if dict_.get('command') == 'lowprice':
-		list_hotels_result = list_hotels_result[:int(dict_.get('amount'))]
-	elif dict_.get('command') == 'highprice':
-		list_hotels_result = list_hotels_result[-(int(dict_.get('amount'))):]
-	elif dict_.get('command') == 'bestdeal':
-		print(list_hotels_result)
-		list_hotels_result = sort_bestdeal(list_hotels_result, dict_)
-		print(list_hotels_result)
-		if len(list_hotels_result) >= int(dict_.get('amount'))+1:
+	print('list_hotels_result after recursion_list_hotels func', list_hotels_result)
+	if list_hotels_result == []:
+		return list_hotels_result
+	else:
+		if dict_.get('command') == 'lowprice':
 			list_hotels_result = list_hotels_result[:int(dict_.get('amount'))]
-			print(list_hotels_result)
+		elif dict_.get('command') == 'highprice':
+			list_hotels_result = list_hotels_result[-(int(dict_.get('amount'))):]
+		elif dict_.get('command') == 'bestdeal':
+			list_hotels_result = sort_bestdeal(list_hotels_result, dict_)
+			print('list_hotels_result after sort_bestdeal', list_hotels_result)
+			print('len(list_hotels_result)', len(list_hotels_result))
+			if len(list_hotels_result) >= int(dict_.get('amount')):
+				list_hotels_result = list_hotels_result[:int(dict_.get('amount'))]
+				print('cut_len(list_hotels_result)', len(list_hotels_result))
+
+
+
+		if not dict_.get('photo_amount') == 0:
+			photos_url = settings.URLS[2]
+			photos_list = []
+			for i in list_hotels_result:
+				querystring = {"id": i.get('id')}
+				photos_response = requests.request(
+					"GET",
+					photos_url,
+					headers=settings.HEADERS,
+					params=querystring
+				)
+				photos_data = json.loads(photos_response.text)
+				with open('Photos.json', 'w') as photos:
+					json.dump(photos_data, photos, indent=4)
+				photos_result = recursion_photos(photos_data)
+				photos_result = photos_result[:dict_.get('photo_amount')]
+				photos_list.append(photos_result)
+			else:
+				pass
+
+		if list_hotels_result == []:
+			return list_hotels_result
 		else:
-			list_hotels_result = list_hotels_result
-			print(list_hotels_result)
+			list_info = [list() for _ in range(len(list_hotels_result))]
+			for i in list_hotels_result:
+				list_info[list_hotels_result.index(i)].append(i.get("name"))
+				list_info[list_hotels_result.index(i)].append(i.get("address").get("streetAddress"))
+				list_info[list_hotels_result.index(i)].append(i.get("landmarks")[0].get("distance"))
+				list_info[list_hotels_result.index(i)].append(i.get("ratePlan").get("price").get("current"))
+				if i.get("ratePlan").get("price").get("fullyBundledPricePerStay", ''):
+					ppd = re.search(r'\$\d*\W*\d*', i.get("ratePlan").get("price").get("fullyBundledPricePerStay", '')).group()
+					print(ppd)
+					list_info[list_hotels_result.index(i)].append(ppd)
+				if not dict_.get('photo_amount') == 0:
+					list_info[list_hotels_result.index(i)].extend(photos_list[list_hotels_result.index(i)])
+				else:
+					pass
+			logging(list_info)
 
-	photos_url = settings.URLS[2]
-	photos_list = []
-	for i in list_hotels_result:
-		querystring = {"id": i.get('id')}
-		photos_response = requests.request(
-			"GET",
-			photos_url,
-			headers=settings.HEADERS,
-			params=querystring
-		)
-		photos_data = json.loads(photos_response.text)
-		with open('Photos.json', 'w') as photos:
-			json.dump(photos_data, photos, indent=4)
-		photos_result = recursion_photos(photos_data)
-		photos_result = photos_result[:dict_.get('photo_amount')]
-		photos_list.append(photos_result)
-
-	list_info = [list() for _ in range(int(dict_.get('amount')))]
-	for i in list_hotels_result:
-		list_info[list_hotels_result.index(i)].append(i.get("name"))
-		list_info[list_hotels_result.index(i)].append(i.get("address").get("streetAddress"))
-		list_info[list_hotels_result.index(i)].append(i.get("landmarks")[0].get("distance"))
-		list_info[list_hotels_result.index(i)].append(i.get("ratePlan").get("price").get("current"))
-		if i.get("ratePlan").get("price").get("fullyBundledPricePerStay", ''):
-			ppd = re.search(r'\$\d*\W*\d*', i.get("ratePlan").get("price").get("fullyBundledPricePerStay", '')).group()
-			print(ppd)
-			list_info[list_hotels_result.index(i)].append(ppd)
-		list_info[list_hotels_result.index(i)].extend(photos_list[list_hotels_result.index(i)])
-	logging(list_info)
-
-	return list_info
+			return list_info
 
 
 def sort_bestdeal(list_: List, dict_: Dict):
 	"""
 		Собирает список отелей для команды bestdeal
-		:param data_: List
+		:param list_: List
 		:return: List
 		"""
-	range_distance = dict_.get('range_distance')
+	range_distance = float(dict_.get('range_distance'))
 	list_res = []
-	p = r'\d{2}\.\d*'
+	p = r'\d*.\d*'
 	for i in list_:
 		s = i.get("landmarks")[0].get("distance")
-		print(float(re.search(p, str(s)).group()))
-		if float(re.search(p, str(s)).group()) <= range_distance:
-			list_.append(i)
-	return list_
+		# print(s)
+		# print(float(re.search(r'\d*.\d*', i.get("landmarks")[0].get("distance")).group()))
+		if float(re.search(p, str(s)).group()) < range_distance:
+			list_res.append(i)
+			print(list_res)
+	return list_res
 
 
 
