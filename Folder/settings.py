@@ -14,3 +14,13 @@ KEY = '5246923628:AAGR1ONt2gFZ8vQoqz6I4TpL7cAiPVaNQfg'
 MAX_HOTELS = 5
 
 MAX_PHOTOS = 5
+
+info = {
+    'command': None,
+    'city': None,
+    'range_price': None,
+    'range_distance': None,
+    'amount': None,
+    'photo_amount': None,
+
+}

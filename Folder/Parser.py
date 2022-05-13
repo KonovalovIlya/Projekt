@@ -49,7 +49,6 @@ def parsing(dict_: Dict = None) -> List:
 	with open('list_hotels.json', 'w') as hotels:
 		json.dump(list_hotels_data, hotels, indent=4)
 	list_hotels_result = recursion_list_hotels(list_hotels_data)
-	print('list_hotels_result after recursion_list_hotels func', list_hotels_result)
 	if list_hotels_result == []:
 		return list_hotels_result
 	else:
@@ -59,15 +58,10 @@ def parsing(dict_: Dict = None) -> List:
 			list_hotels_result = list_hotels_result[-(int(dict_.get('amount'))):]
 		elif dict_.get('command') == 'bestdeal':
 			list_hotels_result = sort_bestdeal(list_hotels_result, dict_)
-			print('list_hotels_result after sort_bestdeal', list_hotels_result)
-			print('len(list_hotels_result)', len(list_hotels_result))
 			if len(list_hotels_result) >= int(dict_.get('amount')):
 				list_hotels_result = list_hotels_result[:int(dict_.get('amount'))]
-				print('cut_len(list_hotels_result)', len(list_hotels_result))
 
-
-
-		if not dict_.get('photo_amount') == 0:
+		if not int(dict_.get('photo_amount')) == 0:
 			photos_url = settings.URLS[2]
 			photos_list = []
 			for i in list_hotels_result:
@@ -82,7 +76,7 @@ def parsing(dict_: Dict = None) -> List:
 				with open('Photos.json', 'w') as photos:
 					json.dump(photos_data, photos, indent=4)
 				photos_result = recursion_photos(photos_data)
-				photos_result = photos_result[:dict_.get('photo_amount')]
+				photos_result = photos_result[:int(dict_.get('photo_amount'))]
 				photos_list.append(photos_result)
 			else:
 				pass
@@ -98,16 +92,15 @@ def parsing(dict_: Dict = None) -> List:
 				list_info[list_hotels_result.index(i)].append(i.get("ratePlan").get("price").get("current"))
 				if i.get("ratePlan").get("price").get("fullyBundledPricePerStay", ''):
 					ppd = re.search(r'\$\d*\W*\d*', i.get("ratePlan").get("price").get("fullyBundledPricePerStay", '')).group()
-					print(ppd)
+					#print(ppd)
 					list_info[list_hotels_result.index(i)].append(ppd)
 				if not dict_.get('photo_amount') == 0:
 					list_info[list_hotels_result.index(i)].extend(photos_list[list_hotels_result.index(i)])
 				else:
 					pass
-			logging(list_info)
+			logging(list_info, dict_)
 
 			return list_info
-
 
 def sort_bestdeal(list_: List, dict_: Dict):
 	"""
@@ -127,8 +120,6 @@ def sort_bestdeal(list_: List, dict_: Dict):
 			print(list_res)
 	return list_res
 
-
-
 def recursion_locations_search(data_: Dict, dict_: Dict) -> List:
 	"""
 	Определяет город, возвращает id города.
@@ -146,7 +137,6 @@ def recursion_locations_search(data_: Dict, dict_: Dict) -> List:
 			list_res = [data_.get('name'), data_.get('destinationId')]
 
 			return list_res
-
 
 def recursion_list_hotels(data_: Dict) -> List:
 	"""
@@ -167,7 +157,6 @@ def recursion_list_hotels(data_: Dict) -> List:
 
 			return data_.get(i)
 
-
 def recursion_photos(data_: Dict) -> List:
 	"""
 	Собирает список фото
@@ -182,20 +171,41 @@ def recursion_photos(data_: Dict) -> List:
 
 	return list_photos
 
-
-def logging(list_ : List):
-	with open('log.txt', 'a') as log_file:
+def logging(list_: List, dict_: Dict) -> None:
+	amount = len(list_)
+	with open('log.txt', 'a', encoding='utf-8') as log_file:
+		log_file.write('\n')
 		log_file.write('{}\n'.format(datetime.utcnow()))
-		for i in list_:
-			if not isinstance(i, list):
-				log_file.write(i)
-				log_file.write('\n')
+		log_file.write('{}\n'.format(dict_.get('command')))
+		if list_ == []:
+			log_file.write('{}\n{}\nЯ не смог ничего найти\n'.format(datetime.utcnow(), dict_.get('command')))
+		else:
+			log_file.write('{}\n{}\nЯ смог найти {} из {} отелей\n'.format(
+				datetime.utcnow(), dict_.get('command'), amount, dict_.get('amount'))
+			)
+			if '$' in list_[0][4]:
+				for i in range(amount):
+					log_file.write(
+						'Отель - {name}, адрес - {street}, расстояние от центра - {distance}, '
+						'цена за ночь - {price}, стоимость за указанные даты - {price_for_all}, {photos}\n'.format(
+							name=list_[i][0],
+							street=list_[i][1],
+							distance=list_[i][2],
+							price=list_[i][3],
+							price_for_all=list_[i][4],
+							photos=', '.join(list_[i][5:])
+						))
 			else:
-				for j in i:
-					log_file.write(j)
-					log_file.write('\n')
-			log_file.write('\n')
-		log_file.write('\n'*2)
+				for i in range(amount):
+					log_file.write(
+						'Отель - {name}, адрес - {street}, расстояние от центра - {distance}, '
+						'цена за ночь - {price}, {photos}'.format(
+							name=list_[i][0],
+							street=list_[i][1],
+							distance=list_[i][2],
+							price=list_[i][3],
+							photos=', '.join(list_[i][4:])
+						))
 
 
 if __name__ == '__main__':

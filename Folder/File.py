@@ -2,20 +2,28 @@ import telebot
 from telebot import types
 from Parser import parsing
 import settings
+from settings import info
 import re
 
 
 bot = telebot.TeleBot(settings.KEY)
-info = dict()
-
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
+    '''
+    Приветствует пользователя
+    '''
     bot.send_message(message.chat.id,
-                     'Привет, {name}!\nНе знаешь с чего начать?\nХочешь узнать что я могу?\nНажми кнопку хелп. '
+                     'Привет, {name}!\nНе знаешь с чего начать?\nХочешь узнать что я могу?\nНажми кнопку Help. '
                      'Или выбери другую команду.'.format(
                          name=message.from_user.first_name))
+    start_key_board(message)
 
+@bot.message_handler(content_types=['text'])
+def start_key_board(message):
+    '''
+    Вызывает клавиатуру выбора команд
+    '''
     keyboard = types.InlineKeyboardMarkup()
     key_message = 'Могу найти отели:'
     keyboard.row(
@@ -24,65 +32,36 @@ def welcome(message):
         types.InlineKeyboardButton(text='Для вас', callback_data='/bestdeal')
     )
     keyboard.row(
-        types.InlineKeyboardButton(text='help', callback_data='/help'),
-        types.InlineKeyboardButton(text='history', callback_data='/history'),
+        types.InlineKeyboardButton(text='Help', callback_data='/help'),
+        types.InlineKeyboardButton(text='History', callback_data='/history'),
     )
-    bot.send_message(message.from_user.id, text=key_message, reply_markup=keyboard)
-
-# @bot.message_handler(content_types=['text'])
-# def get_message(message):
-
+    bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
 
 @bot.message_handler(commands=['help'])
 def help_message(message):
-    bot.send_message(message.chat.id,
-                     'Здесь текст описания бота')
+    '''
+    Выводит описание возможностей бота
+    '''
+    help_message_str = 'Я могу подбирать отели.\nЕсли нажмешь на кнопку "Дешовые", я подберу самые дешовые отели.\n'\
+            'Если нажмешь на кнопку "Дорогие", я подберу самые дорогие отели.\n'\
+            'Если нажмешь на кнопку "Для вас", я подберу самые подходящие отели под указанные параметры.\n'\
+            'Если нажмешь на кнопку "History", я отправлю тебе файл с ответами на все запросы которые ты мне отправлял.\n'
+    bot.send_message(message.chat.id, help_message_str)
 
     keyboard = types.InlineKeyboardMarkup()
-    key_message = 'Не забудь отправить коммент автору.'
-    key_author = types.InlineKeyboardButton(text='Написать автору', url='telegram.me/AuthorTB')
-    keyboard.add(key_author)
+    key_message = 'Не забудь отправить коммент автору. Для поиска отелей нажми "Начать поиск"'
+    keyboard.row(
+        types.InlineKeyboardButton(text='Написать автору', url='telegram.me/AuthorTB'),
+        types.InlineKeyboardButton(text='Начать поиск', callback_data='start_search')
+    )
     bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
-
-
-# @bot.message_handler(commands=['lowprice'])
-# def lowprice(message):
-#     '''
-#     Подбирает самые дешовые отели.
-#     '''
-#     # info['command'] = 'lowprice'
-#     # get_city(message)
-
-
-# @bot.message_handler(commands=['highprice'])
-# def highprice(message):
-#     '''
-#     Подбирает самые дорогие отели.
-#     '''
-#     info['command'] = 'highprice'
-#     bot.send_message(message.chat.id, 'Давайте начнем')
-#     get_city(message)
-
-
-# @bot.message_handler(commands=['bestdeal'])
-# def bestdeal(message):
-#     '''
-#     Подбирает отели c лучшими совпадениями.
-#     '''
-#     info['command'] = 'bestdeal'
-#     bot.send_message(message.chat.id, 'Давайте начнем')
-#     get_city(message)
-
 
 @bot.message_handler(commands=['history'])
 def history(message):
     '''
     История запросов.
     '''
-    with open('log.txt', 'r') as log_file:
-        history = log_file.readlines()
-    bot.send_message(message.chat.id, '{}'.format(history))
-
+    bot.send_document(message.chat.id, open(r'log.txt', 'rb'))
 
 @bot.message_handler(content_types=['text'])
 def get_city(message):
@@ -101,94 +80,79 @@ def get_city(message):
     )
     bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
 
-
 @bot.message_handler(content_types=['text'])
 def get_range_price(message):
-    # if not message.text.isascii():
-    #     bot.send_message(message.chat.id, 'В названии города используйте только латинские буквы')
-    #     get_city(message)
-    # else:
-    #     if message.text.isalpha():
-    #         info['city'] = message.text
-    #     bot.send_message(message.chat.id, 'Укажите диапазон цен за ночь, через запятую')
-    #     print(info)
-    #     bot.register_next_step_handler(message, get_range_distance)
+    """
+    Определяет диапазон цен за номер за ночь
+    """
     keyboard = types.InlineKeyboardMarkup()
     key_message = 'Укажите стоимость номера за ночь'
     keyboard.row(
         types.InlineKeyboardButton(text='До 25', callback_data='0, 25'),
         types.InlineKeyboardButton(text='От 25 до 75', callback_data='25, 75'),
         types.InlineKeyboardButton(text='От 75 до 150', callback_data='75, 150'),
-        # types.InlineKeyboardButton(text='От 150 до 250', callback_data='150, 250'),
-        # types.InlineKeyboardButton(text='От 250 до 500', callback_data='250, 500')
     )
     keyboard.row(
         types.InlineKeyboardButton(text='От 150 до 250', callback_data='150, 250'),
         types.InlineKeyboardButton(text='От 250 до 500', callback_data='250, 500')
     )
-    bot.send_message(message.message.chat.id, text=key_message, reply_markup=keyboard)
-
+    try:
+        if message.text.isascii():
+            info['city'] = message.text
+            bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
+        else:
+            bot.send_message(message.chat.id, 'В названии города используйте только латинские буквы')
+            bot.register_next_step_handler(message, get_city)
+    except:
+        bot.send_message(message.message.chat.id, text=key_message, reply_markup=keyboard)
 
 @bot.message_handler(content_types=['text'])
 def get_range_distance(message):
-    # if not re.search(r'\d{2,}, \d{2,}', message.text):
-    #     bot.send_message(message.chat.id, 'Давай-ка еще раз. Число. Запятая. Пробел. Число.')
-    #     get_range_price(message)
-    # else:
-    #     info['range_price'] = message.text.split(', ')
-    #     bot.send_message(message.chat.id, 'Укажите расстояние от центра в милях. Целое число.')
-    #     print(info)
-    #     bot.register_next_step_handler(message, get_amount)
+    """
+    Определяет максимальное расстояние от центра
+    """
     keyboard = types.InlineKeyboardMarkup()
     key_message = 'Укажите расстояние от центра в милях.'
     keyboard.row(
-        types.InlineKeyboardButton(text='1', callback_data='1'),
-        types.InlineKeyboardButton(text='2', callback_data='2'),
-        types.InlineKeyboardButton(text='3', callback_data='3'),
-        types.InlineKeyboardButton(text='4', callback_data='4'),
-        types.InlineKeyboardButton(text='5', callback_data='5')
+        types.InlineKeyboardButton(text='1', callback_data='dist_1'),
+        types.InlineKeyboardButton(text='2', callback_data='dist_2'),
+        types.InlineKeyboardButton(text='3', callback_data='dist_3'),
+        types.InlineKeyboardButton(text='4', callback_data='dist_4'),
+        types.InlineKeyboardButton(text='5', callback_data='dist_5')
     )
     bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
-
 
 @bot.message_handler(content_types=['text'])
 def get_amount(message):
     """
-    Определяет количество отелей оп которым необходимо собрать информацию
+    Определяет количество отелей по которым необходимо собрать информацию
     """
+    keyboard = types.InlineKeyboardMarkup()
+    key_message = 'Укажите кол-во отелей.'
+    keyboard.row(
+        types.InlineKeyboardButton(text='1', callback_data='amount_1'),
+        types.InlineKeyboardButton(text='2', callback_data='amount_2'),
+        types.InlineKeyboardButton(text='3', callback_data='amount_3'),
+        types.InlineKeyboardButton(text='4', callback_data='amount_4'),
+        types.InlineKeyboardButton(text='5', callback_data='amount_5')
+    )
     try:
         if message.text.isascii():
             info['city'] = message.text
-
+            bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
         else:
             bot.send_message(message.chat.id, 'В названии города используйте только латинские буквы')
-            get_city(message)
+            bot.register_next_step_handler(message, get_city)
     except:
-        pass
-    finally:
-        keyboard = types.InlineKeyboardMarkup()
-        key_message = 'Укажите кол-во отелей.'
-        keyboard.row(
-            types.InlineKeyboardButton(text='1', callback_data='amount_1'),
-            types.InlineKeyboardButton(text='2', callback_data='amount_2'),
-            types.InlineKeyboardButton(text='3', callback_data='amount_3'),
-            types.InlineKeyboardButton(text='4', callback_data='amount_4'),
-            types.InlineKeyboardButton(text='5', callback_data='amount_5')
-        )
-        bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
-
+        bot.send_message(message.message.chat.id, text=key_message, reply_markup=keyboard)
 
 @bot.message_handler(content_types=['text'])
 def get_date(message):
     """
     Определяет период за который необходимо
     """
-        bot.send_message(message.chat.id, 'Укажите даты въезда и выезда через запятую в формате гггг-мм-дд')
-        bot.register_next_step_handler(message, get_photo)
-    else:
-        bot.send_message(message.chat.id, 'Используйте цифры, кол-во не должно быть больше 5-ти')
-        bot.register_next_step_handler(message, get_date)
-
+    bot.send_message(message.chat.id, 'Укажите даты въезда и выезда через запятую в формате гггг-мм-дд')
+    bot.register_next_step_handler(message, get_photo)
 
 @bot.message_handler(content_types=['text'])
 def get_photo(message):
@@ -198,8 +162,15 @@ def get_photo(message):
     if re.match(r'\d{4}-[0-1][0-9]-[0-3][0-9], \d{4}-[0-1][0-9]-[0-3][0-9]', message.text):
         info['check_in'] = message.text.split(', ')[0]
         info['check_out'] = message.text.split(', ')[1]
-        bot.send_message(message.chat.id, 'Загрузить фото по отелям?')
-        bot.register_next_step_handler(message, get_photo_amount)
+        #bot.send_message(message.chat.id, 'Загрузить фото по отелям?')
+        #bot.register_next_step_handler(message, get_photo_amount)
+        keyboard = types.InlineKeyboardMarkup()
+        key_message = 'Загрузить фото по отелям?'
+        keyboard.row(
+            types.InlineKeyboardButton(text='Да', callback_data='yes_p'),
+            types.InlineKeyboardButton(text='Нет', callback_data='no_p')
+        )
+        bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
     else:
         bot.send_message(
             message.chat.id,
@@ -207,31 +178,27 @@ def get_photo(message):
         )
         bot.register_next_step_handler(message, get_photo)
 
-
 @bot.message_handler(content_types=['text'])
 def get_photo_amount(message):
     """
     Определяет кол-во фото.
     """
-    if not message.text.lower() == 'да':
-        get_confirmation(message)
-    else:
-        bot.send_message(message.chat.id, 'Сколько фото(не больше пяти)?')
-        bot.register_next_step_handler(message, get_confirmation)
-
+    keyboard = types.InlineKeyboardMarkup()
+    key_message = 'Укажите кол-во фото.'
+    keyboard.row(
+        types.InlineKeyboardButton(text='1', callback_data='photo_1'),
+        types.InlineKeyboardButton(text='2', callback_data='photo_2'),
+        types.InlineKeyboardButton(text='3', callback_data='photo_3'),
+        types.InlineKeyboardButton(text='4', callback_data='photo_4'),
+        types.InlineKeyboardButton(text='5', callback_data='photo_5')
+    )
+    bot.send_message(message.message.chat.id, text=key_message, reply_markup=keyboard)
 
 @bot.message_handler(content_types=['text'])
 def get_confirmation(message):
     """
     Проверка запрашиваемых даных.
     """
-    if message.text.isdigit():
-        info['photo_amount'] = int(message.text)
-    elif message.text.lower() == 'нет':
-        info['photo_amount'] = 0
-    else:
-        bot.send_message(message.chat.id, 'Используйте цифры')
-        bot.register_next_step_handler(message, get_photo_amount)
     keyboard = types.InlineKeyboardMarkup()
     key_yes = types.InlineKeyboardButton(text='Да', callback_data='Yes')
     keyboard.add(key_yes)
@@ -244,7 +211,13 @@ def get_confirmation(message):
     )
     bot.send_message(message.from_user.id, text=info_all, reply_markup=keyboard)
 
-
+def restart(message):
+    keyboard = types.InlineKeyboardMarkup()
+    key_message = 'Для нового поиска нажми "Начать поиск"'
+    keyboard.row(
+        types.InlineKeyboardButton(text='Начать поиск', callback_data='start_search')
+    )
+    bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
@@ -266,6 +239,9 @@ def callback_worker(call):
             info['command'] = 'lowprice'
             get_city(call.message)
 
+        elif call.data == 'start_search':
+            start_key_board(call.message)
+
         elif call.data == "/highprice":
             bot.answer_callback_query(call.id)
             info['command'] = 'highprice'
@@ -276,7 +252,7 @@ def callback_worker(call):
             info['command'] = 'bestdeal'
             get_city(call.message)
 
-        elif call.data in ['London', 'New York', 'Pris']:
+        elif call.data in ['London', 'New York', 'Paris']:
             info['city'] = call.data
             if info['command'] == 'bestdeal':
                 get_range_price(call)
@@ -294,14 +270,20 @@ def callback_worker(call):
             info['range_price'] = call.data.split(', ')
             get_range_distance(call.message)
 
-        elif call.data in range(1, 6):
-            info['range_distance'] = float(call.data)
-            get_amount(call.message)
+        elif call.data.startswith('dist_'):
+            info['range_distance'] = call.data.lstrip('dist_')
+            print(info)
+            get_amount(call)
 
         elif call.data.startswith('amount_'):
             info['amount'] = call.data.lstrip('amount_')
             print(info)
             get_date(call.message)
+
+        elif call.data.startswith('photo_'):
+            info['photo_amount'] = call.data.lstrip('photo_')
+            print(info)
+            get_confirmation(call)
 
         elif call.data == "Yes":
             bot.answer_callback_query(call.id)
@@ -310,6 +292,7 @@ def callback_worker(call):
             print(res)
             if res == []:
                 bot.send_message(call.message.chat.id, 'Я не смог ничего найти')
+                bot.send_message(call.message.chat.id, 'Для вызова начальной клавиатуры нажми /start')
             else:
                 if '$' in res[0][4]:
                     bot.send_message(call.message.chat.id, 'Я смог найти {} из {} отелей'.format(amount, info.get('amount')))
@@ -322,8 +305,9 @@ def callback_worker(call):
                                 distance=res[i][2],
                                 price=res[i][3],
                                 price_for_all=res[i][4],
-                                photos=res[i][5:]
+                                photos=', '.join(res[i][5:])
                             ))
+                    restart(call.message)
                 else:
                     for i in range(amount):
                         bot.send_message(
@@ -333,14 +317,21 @@ def callback_worker(call):
                                 street=res[i][1],
                                 distance=res[i][2],
                                 price=res[i][3],
-                                photos=res[i][4:]
+                                photos=', '.join(res[i][4:])
                             ))
+                    restart(call.message)
+
 
         elif call.data == "No":
-            bot.answer_callback_query(call.id)
             bot.send_message(call.message.chat.id, 'Начнем сначала')
-            welcome(call.message)
+            start_key_board(call.message)
 
+        elif call.data == 'yes_p':
+          get_photo_amount(call)
+
+        elif call.data == 'no_p':
+          info['photo_amount'] = 0
+          get_confirmation(call)
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
