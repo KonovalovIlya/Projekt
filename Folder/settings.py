@@ -22,5 +22,7 @@ info = {
     'range_distance': None,
     'amount': None,
     'photo_amount': None,
-
+    'log_file': None
 }
+
+dict_ = {}

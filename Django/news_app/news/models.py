@@ -23,7 +23,7 @@ class News(models.Model):
         verbose_name = 'новость'
         verbose_name_plural = 'новости'
         permissions = (
-            ('edit', 'может добавлять'),
+            ('can_edit', 'может добавлять'),
         )
 
 

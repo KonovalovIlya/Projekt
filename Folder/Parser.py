@@ -171,9 +171,10 @@ def recursion_photos(data_: Dict) -> List:
 
 	return list_photos
 
+
 def logging(list_: List, dict_: Dict) -> None:
 	amount = len(list_)
-	with open('log.txt', 'a', encoding='utf-8') as log_file:
+	with open(dict_.get('log_file'), 'a', encoding='utf-8') as log_file:
 		log_file.write('\n')
 		log_file.write('{}\n'.format(datetime.utcnow()))
 		log_file.write('{}\n'.format(dict_.get('command')))
