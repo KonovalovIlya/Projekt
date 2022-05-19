@@ -16,11 +16,34 @@
     {% endif %}
     <h1>Новости</h1>
     {% if news_list %}
-        {% for news in news_list %}
-            <ul>
-                <li><a href="/news/{{ news.id }}">{{ news.title }}</a></li>
-            </ul>
-        {% endfor %}
+        {% if request.user.is_staff %}
+            <div>
+                <h3>Не опубликованные новости</h3>
+                {% for news in news_list %}
+                    <ul>
+                        {% if not news.interest %}
+                        <li><a href="/news/{{ news.id }}">{{ news.title }}</a></li>
+                        {% endif %}
+                    </ul>
+                {% endfor %}
+                <h3>Опубликованные новости</h3>
+                {% for news in news_list %}
+                    <ul>
+                        {% if news.interest %}
+                        <li><a href="/news/{{ news.id }}">{{ news.title }}</a></li>
+                        {% endif %}
+                    </ul>
+                {% endfor %}
+            </div>
+        {% else %}
+            {% for news in news_list %}
+                <ul>
+                    {% if news.interest %}
+                    <li><a href="/news/{{ news.id }}">{{ news.title }}</a></li>
+                    {% endif %}
+                </ul>
+            {% endfor %}
+        {% endif %}
     {% else %}
     <p>Новостей нет</p>
     {% endif %}

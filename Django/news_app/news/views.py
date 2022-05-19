@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
@@ -67,10 +68,11 @@ class CommentFormView(View):
         return render(request, 'news/comment_new.html', {'comment_form': comment_form, 'news_id': news_id})
 
 
+# @permission_required('news.can_edit_news')
 class NewsFormView(View):
 
     def get(self, request):
-        if not request.user.has_perm('news.edit_news'):
+        if not request.user.has_perm('news.add_news'):
             raise PermissionDenied()
         news_form = NewsForm()
         del news_form.fields['author']

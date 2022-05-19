@@ -1,23 +1,44 @@
+import threading
+import functools
 import telebot
 from telebot import types
 from Parser import parsing
 import settings
-from settings import info
+from settings import info, dict_
 import re
 
 
 bot = telebot.TeleBot(settings.KEY)
 
+
+def threading_func(func):
+    @functools.wraps(func)
+    def wrapped(*args, **kwargs):
+        lock = threading.Lock()
+        with lock:
+            thread = threading.Thread(target=func(*args, **kwargs))
+            thread.start()
+            thread.join()
+        return
+    return wrapped
+
+
 @bot.message_handler(commands=['start'])
+@threading_func
 def welcome(message):
     '''
     Приветствует пользователя
     '''
+    global dict_
+    dict_[str(message.from_user.id)] = info
+    dict_.get(str(message.from_user.id))['log_file'] = str(message.from_user.id).join(['log_', '.txt'])
+    print(dict_)
     bot.send_message(message.chat.id,
                      'Привет, {name}!\nНе знаешь с чего начать?\nХочешь узнать что я могу?\nНажми кнопку Help. '
                      'Или выбери другую команду.'.format(
                          name=message.from_user.first_name))
     start_key_board(message)
+
 
 @bot.message_handler(content_types=['text'])
 def start_key_board(message):
@@ -37,15 +58,16 @@ def start_key_board(message):
     )
     bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
 
+
 @bot.message_handler(commands=['help'])
 def help_message(message):
     '''
     Выводит описание возможностей бота
     '''
     help_message_str = 'Я могу подбирать отели.\nЕсли нажмешь на кнопку "Дешовые", я подберу самые дешовые отели.\n'\
-            'Если нажмешь на кнопку "Дорогие", я подберу самые дорогие отели.\n'\
-            'Если нажмешь на кнопку "Для вас", я подберу самые подходящие отели под указанные параметры.\n'\
-            'Если нажмешь на кнопку "History", я отправлю тебе файл с ответами на все запросы которые ты мне отправлял.\n'
+        'Если нажмешь на кнопку "Дорогие", я подберу самые дорогие отели.\nЕсли нажмешь на кнопку "Для вас", '\
+        'я подберу самые подходящие отели под указанные параметры.\nЕсли нажмешь на кнопку "History", я отправлю '\
+        'тебе файл с ответами на все запросы которые ты мне отправлял.\n'
     bot.send_message(message.chat.id, help_message_str)
 
     keyboard = types.InlineKeyboardMarkup()
@@ -56,12 +78,14 @@ def help_message(message):
     )
     bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
 
+
 @bot.message_handler(commands=['history'])
 def history(message):
     '''
     История запросов.
     '''
-    bot.send_document(message.chat.id, open(r'log.txt', 'rb'))
+    bot.send_document(message.chat.id, open(dict_.get(str(message.from_user.id)).get('log_file'), 'rb'))
+
 
 @bot.message_handler(content_types=['text'])
 def get_city(message):
@@ -80,11 +104,14 @@ def get_city(message):
     )
     bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
 
+
 @bot.message_handler(content_types=['text'])
+@threading_func
 def get_range_price(message):
     """
     Определяет диапазон цен за номер за ночь
     """
+    global dict_
     keyboard = types.InlineKeyboardMarkup()
     key_message = 'Укажите стоимость номера за ночь'
     keyboard.row(
@@ -98,13 +125,15 @@ def get_range_price(message):
     )
     try:
         if message.text.isascii():
-            info['city'] = message.text
+            dict_.get(str(message.from_user.id))['city'] = message.text
+            print(dict_)
             bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
         else:
             bot.send_message(message.chat.id, 'В названии города используйте только латинские буквы')
             bot.register_next_step_handler(message, get_city)
     except:
         bot.send_message(message.message.chat.id, text=key_message, reply_markup=keyboard)
+
 
 @bot.message_handler(content_types=['text'])
 def get_range_distance(message):
@@ -122,11 +151,14 @@ def get_range_distance(message):
     )
     bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
 
+
 @bot.message_handler(content_types=['text'])
+@threading_func
 def get_amount(message):
     """
     Определяет количество отелей по которым необходимо собрать информацию
     """
+    global dict_
     keyboard = types.InlineKeyboardMarkup()
     key_message = 'Укажите кол-во отелей.'
     keyboard.row(
@@ -138,13 +170,15 @@ def get_amount(message):
     )
     try:
         if message.text.isascii():
-            info['city'] = message.text
+            dict_.get(str(message.from_user.id))['city'] = message.text
+            print(dict_)
             bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
         else:
             bot.send_message(message.chat.id, 'В названии города используйте только латинские буквы')
             bot.register_next_step_handler(message, get_city)
     except:
         bot.send_message(message.message.chat.id, text=key_message, reply_markup=keyboard)
+
 
 @bot.message_handler(content_types=['text'])
 def get_date(message):
@@ -154,16 +188,18 @@ def get_date(message):
     bot.send_message(message.chat.id, 'Укажите даты въезда и выезда через запятую в формате гггг-мм-дд')
     bot.register_next_step_handler(message, get_photo)
 
+
 @bot.message_handler(content_types=['text'])
+@threading_func
 def get_photo(message):
     """
     Определяет необходимость загрузки фото
     """
+    global dict_
     if re.match(r'\d{4}-[0-1][0-9]-[0-3][0-9], \d{4}-[0-1][0-9]-[0-3][0-9]', message.text):
-        info['check_in'] = message.text.split(', ')[0]
-        info['check_out'] = message.text.split(', ')[1]
-        #bot.send_message(message.chat.id, 'Загрузить фото по отелям?')
-        #bot.register_next_step_handler(message, get_photo_amount)
+        dict_.get(str(message.from_user.id))['check_in'] = message.text.split(', ')[0]
+        dict_.get(str(message.from_user.id))['check_out'] = message.text.split(', ')[1]
+        print(dict_)
         keyboard = types.InlineKeyboardMarkup()
         key_message = 'Загрузить фото по отелям?'
         keyboard.row(
@@ -177,6 +213,7 @@ def get_photo(message):
             'Проверьте указанные даты. Укажите даты въезда и выезда через запятую в формате гггг-мм-дд'
         )
         bot.register_next_step_handler(message, get_photo)
+
 
 @bot.message_handler(content_types=['text'])
 def get_photo_amount(message):
@@ -194,6 +231,7 @@ def get_photo_amount(message):
     )
     bot.send_message(message.message.chat.id, text=key_message, reply_markup=keyboard)
 
+
 @bot.message_handler(content_types=['text'])
 def get_confirmation(message):
     """
@@ -205,11 +243,12 @@ def get_confirmation(message):
     key_no = types.InlineKeyboardButton(text='Нет', callback_data='No')
     keyboard.add(key_no)
     info_all = 'Ищем {amount} отелей в городе {city} с {photo_amount} фото'.format(
-        amount=info['amount'],
-        city=info['city'],
-        photo_amount=info['photo_amount']
+        amount=dict_.get(str(message.from_user.id))['amount'],
+        city=dict_.get(str(message.from_user.id))['city'],
+        photo_amount=dict_.get(str(message.from_user.id))['photo_amount']
     )
     bot.send_message(message.from_user.id, text=info_all, reply_markup=keyboard)
+
 
 def restart(message):
     keyboard = types.InlineKeyboardMarkup()
@@ -219,11 +258,14 @@ def restart(message):
     )
     bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
 
+
 @bot.callback_query_handler(func=lambda call: True)
+@threading_func
 def callback_worker(call):
     """
     Обработка запроса.
     """
+    global dict_
     if call.data == "/help":
         bot.answer_callback_query(call.id)
         help_message(call.message)
@@ -236,69 +278,87 @@ def callback_worker(call):
 
         if call.data == "/lowprice":
             bot.answer_callback_query(call.id)
-            info['command'] = 'lowprice'
+            if call.from_user.id == dict_.get(str(call.from_user.id)):
+                dict_[str(call.from_user.id)]['command'] = 'lowprice'
+            print(dict_)
             get_city(call.message)
 
         elif call.data == 'start_search':
+            bot.answer_callback_query(call.id)
             start_key_board(call.message)
 
         elif call.data == "/highprice":
             bot.answer_callback_query(call.id)
-            info['command'] = 'highprice'
+            if call.from_user.id == dict_.get(str(call.from_user.id)):
+                dict_[str(call.from_user.id)]['command'] = 'highprice'
+            print(dict_)
             get_city(call.message)
 
         elif call.data == "/bestdeal":
             bot.answer_callback_query(call.id)
-            info['command'] = 'bestdeal'
+            if call.from_user.id == dict_.get(str(call.from_user.id)):
+                dict_[str(call.from_user.id)]['command'] = 'bestdeal'
+            print(dict_)
             get_city(call.message)
 
         elif call.data in ['London', 'New York', 'Paris']:
-            info['city'] = call.data
-            if info['command'] == 'bestdeal':
+            bot.answer_callback_query(call.id)
+            dict_[str(call.from_user.id)]['city'] = call.data
+            print(dict_)
+            if dict_.get(str(call.from_user.id))['command'] == 'bestdeal':
                 get_range_price(call)
             else:
                 get_amount(call)
 
         elif call.data == 'my_city':
-            if info['command'] == 'bestdeal':
+            bot.answer_callback_query(call.id)
+            if dict_.get(str(call.from_user.id))['command'] == 'bestdeal':
                 bot.register_next_step_handler(call.message, get_range_price)
             else:
                 bot.register_next_step_handler(call.message, get_amount)
 
         elif re.search(r'\d{,3}, \d{,3}', call.data):
-            print('Нашел')
-            info['range_price'] = call.data.split(', ')
+            bot.answer_callback_query(call.id)
+            dict_.get(str(call.from_user.id))['range_price'] = call.data.split(', ')
+            print(dict_)
             get_range_distance(call.message)
 
         elif call.data.startswith('dist_'):
-            info['range_distance'] = call.data.lstrip('dist_')
-            print(info)
+            bot.answer_callback_query(call.id)
+            dict_.get(str(call.from_user.id))['range_distance'] = call.data.lstrip('dist_')
+            print(dict_)
             get_amount(call)
 
         elif call.data.startswith('amount_'):
-            info['amount'] = call.data.lstrip('amount_')
-            print(info)
+            bot.answer_callback_query(call.id)
+            dict_.get(str(call.from_user.id))['amount'] = call.data.lstrip('amount_')
+            print(dict_)
             get_date(call.message)
 
         elif call.data.startswith('photo_'):
-            info['photo_amount'] = call.data.lstrip('photo_')
-            print(info)
+            bot.answer_callback_query(call.id)
+            dict_.get(str(call.from_user.id))['photo_amount'] = call.data.lstrip('photo_')
+            print(dict_)
             get_confirmation(call)
 
         elif call.data == "Yes":
             bot.answer_callback_query(call.id)
-            res = parsing(info)
+            res = parsing(dict_.get(str(call.from_user.id)))
             amount = len(res)
             print(res)
             if res == []:
                 bot.send_message(call.message.chat.id, 'Я не смог ничего найти')
-                bot.send_message(call.message.chat.id, 'Для вызова начальной клавиатуры нажми /start')
+                restart(call.message)
             else:
                 if '$' in res[0][4]:
-                    bot.send_message(call.message.chat.id, 'Я смог найти {} из {} отелей'.format(amount, info.get('amount')))
+                    bot.send_message(call.message.chat.id, 'Я смог найти {} из {} отелей'.format(
+                        amount,
+                        dict_[str(call.from_user.id)].get('amount')
+                    ))
                     for i in range(amount):
                         bot.send_message(
-                            call.message.chat.id, 'Отель - {name}, адрес - {street}, расстояние от центра - {distance}, '
+                            call.message.chat.id,
+                            'Отель - {name}, адрес - {street}, расстояние от центра - {distance}, '
                             'цена за ночь - {price}, стоимость за указанные даты - {price_for_all}, {photos}'.format(
                                 name=res[i][0],
                                 street=res[i][1],
@@ -311,7 +371,8 @@ def callback_worker(call):
                 else:
                     for i in range(amount):
                         bot.send_message(
-                            call.message.chat.id, 'Отель - {name}, адрес - {street}, расстояние от центра - {distance}, '
+                            call.message.chat.id,
+                            'Отель - {name}, адрес - {street}, расстояние от центра - {distance}, '
                             'цена за ночь - {price}, {photos}'.format(
                                 name=res[i][0],
                                 street=res[i][1],
@@ -321,17 +382,20 @@ def callback_worker(call):
                             ))
                     restart(call.message)
 
-
         elif call.data == "No":
+            bot.answer_callback_query(call.id)
             bot.send_message(call.message.chat.id, 'Начнем сначала')
             start_key_board(call.message)
 
         elif call.data == 'yes_p':
-          get_photo_amount(call)
+            bot.answer_callback_query(call.id)
+            get_photo_amount(call)
 
         elif call.data == 'no_p':
-          info['photo_amount'] = 0
-          get_confirmation(call)
+            bot.answer_callback_query(call.id)
+            dict_[str(call.from_user.id)]['photo_amount'] = 0
+            get_confirmation(call)
+
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
