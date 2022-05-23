@@ -10,7 +10,6 @@ class NewsForm(forms.ModelForm):
         fields = '__all__'
 
 
-
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment

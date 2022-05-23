@@ -15,6 +15,7 @@
         </div>
     {% endif %}
     <h1>Новости</h1>
+
     {% if news_list %}
         {% if request.user.is_staff %}
             <div>
@@ -36,7 +37,24 @@
                 {% endfor %}
             </div>
         {% else %}
-            {% for news in news_list %}
+            <form method="post">
+                {% csrf_token %}
+                {{ news_list.order_by('-created_at') }}
+                <button type="submit"></button>
+            </form>
+            {% if tag %}
+                <h2>News tagged with "{{ tag.name }}"</h2>
+            {% endif %}
+            <p class="tags">
+                Tags:
+                {% for tag in tag_all %}
+                    <a href="{% url 'news_list_by_tag' tag.slug %}">
+                        {{ tag.name }}
+                    </a>
+                    {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            {% for news in posts %}
                 <ul>
                     {% if news.interest %}
                     <li><a href="/news/{{ news.id }}">{{ news.title }}</a></li>
@@ -47,5 +65,6 @@
     {% else %}
     <p>Новостей нет</p>
     {% endif %}
+    {% include "news/pagination.html" with page=posts %}
 </body>
 </html>

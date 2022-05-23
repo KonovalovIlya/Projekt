@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
-# Create your models here.
+from taggit.managers import TaggableManager
 
 
 class News(models.Model):
@@ -15,7 +14,7 @@ class News(models.Model):
     )
     title = models.CharField(verbose_name='Заголовок', max_length=100)
     content = models.CharField(verbose_name='Содержание', max_length=100)
-    tag = models.CharField(max_length=15, default='')
+    tags = TaggableManager()
     created_at = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name='Дата обновления', auto_now=True)
     interest = models.BooleanField(verbose_name='Активность', default=False)

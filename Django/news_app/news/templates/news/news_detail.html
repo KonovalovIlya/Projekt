@@ -9,7 +9,13 @@
     <h1>{{ news.title }}</h1>
     <div>{{ news.content }}</div>
     <div>
-        <a href="tag/tag_{{ news.tag }}">{{ news.tag }}</a>
+        Tags:
+        {% for tag in news.tags.all %}
+            <a href="{% url 'news_list_by_tag' tag.slug %}">
+                {{ tag.name }}
+            </a>
+            {% if not forloop.last %}, {% endif %}
+        {% endfor %}
     </div>
     <div>
         {% if news.interest %}
