@@ -10,6 +10,13 @@ class NewsForm(forms.ModelForm):
         fields = '__all__'
 
 
+class NewsSortedForm(forms.Form):
+    ordering = forms.ChoiceField(label='Сортировать', required=False, choices=[
+        ['created_at', 'сначала новые'],
+        ['-created_at', 'сначала старые']
+    ])
+
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment

@@ -7,7 +7,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.views import generic, View
 from django.http import HttpResponseRedirect
 from news.models import News, Comment, Profile
-from news.forms import NewsForm, CommentForm, AuthForm, RegisterForm
+from news.forms import NewsForm, CommentForm, AuthForm, RegisterForm, NewsSortedForm
 from taggit.models import Tag
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
@@ -15,27 +15,28 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 def news_list(request, tag_slug=None):
     news_l = News.objects.all()
     tag = None
-
-    if tag_slug:
-        tag = get_object_or_404(Tag, slug=tag_slug)
-        news_l = news_l.filter(tags__in=[tag])
-    paginator = Paginator(news_l, 3)  # 3 поста на каждой странице
-    page = request.GET.get('page')
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        # Если страница не является целым числом, поставим первую страницу
-        posts = paginator.page(1)
-        # pass
-    except EmptyPage:
-        # Если страница больше максимальной, доставить последнюю страницу результатов
-        posts = paginator.page(paginator.num_pages)
-    tag_all = News.tags.all()
+    form = NewsSortedForm(request.GET)
+    if form.is_valid():
+        if form.cleaned_data['ordering']:
+            news_l = news_l.order_by(form.cleaned_data['ordering'])
+        if tag_slug:
+            tag = get_object_or_404(Tag, slug=tag_slug)
+            news_l = news_l.filter(tags__in=[tag])
+        paginator = Paginator(news_l, 3)  # 3 поста на каждой странице
+        page = request.GET.get('page')
+        try:
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            # Если страница не является целым числом, поставим первую страницу
+            posts = paginator.page(1)
+            # pass
+        except EmptyPage:
+            # Если страница больше максимальной, доставить последнюю страницу результатов
+            posts = paginator.page(paginator.num_pages)
+        tag_all = News.tags.all()
     return render(request,
                   'news/news_list.html',
-                  # {'page': page,
-                  #  'posts': posts,, 'tag': tag
-                  {'news_list': news_l, 'page': page,
+                  {'news_list': news_l, 'page': page, 'form': form,
                    'posts': posts, 'tag': tag, 'tag_all': tag_all})
 
 # class NewsListView(generic.ListView):

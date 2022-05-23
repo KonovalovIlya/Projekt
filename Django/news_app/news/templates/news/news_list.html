@@ -37,10 +37,9 @@
                 {% endfor %}
             </div>
         {% else %}
-            <form method="post">
-                {% csrf_token %}
-                {{ news_list.order_by('-created_at') }}
-                <button type="submit"></button>
+            <form method="get">
+                {{ form.as_p }}
+                <button type="submit">Поиск</button>
             </form>
             {% if tag %}
                 <h2>News tagged with "{{ tag.name }}"</h2>
