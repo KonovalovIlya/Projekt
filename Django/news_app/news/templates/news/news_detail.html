@@ -9,6 +9,15 @@
     <h1>{{ news.title }}</h1>
     <div>{{ news.content }}</div>
     <div>
+        Tags:
+        {% for tag in news.tags.all %}
+            <a href="{% url 'news_list_by_tag' tag.slug %}">
+                {{ tag.name }}
+            </a>
+            {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+    <div>
         {% if news.interest %}
             <p>Активна</p>
         {% else %}
@@ -29,7 +38,7 @@
                         {% if comment.news.id == object.id %}
                             <li>
                                 {% if comment.user.is_authenticated %}
-                                    <h5>{{ comment.user }}</h5>
+                                    <h5>{{ comment.user.first_name }}</h5>
                                     {{ comment.comment }}
                                 {% else %}
                                     <h5>{{ comment.anonusername }}</h5>

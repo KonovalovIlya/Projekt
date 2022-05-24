@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Новости</title>
+</head>
+<body>
+
+    <h1>{{ news.tag }}</h1>
+    {% if tag_list %}
+        {% if request.user.is_staff %}
+<!--            <div>-->
+<!--                <h3>Не опубликованные новости</h3>-->
+<!--                {% for news in tag_list %}-->
+<!--                    <ul>-->
+<!--                        {% if not news.interest %}-->
+<!--                        <li>-->
+                            <a href="/news/{{ news.id }}">{{ news.title }}</a>
+<!--                        </li>-->
+<!--                        {% endif %}-->
+<!--                    </ul>-->
+<!--                {% endfor %}-->
+                <h3>Опубликованные новости</h3>
+                {% for news in news_list %}
+                    <ul>
+                        {% if news.interest %}
+                        <li><a href="/news/{{ news.id }}">{{ news.title }}</a></li>
+                        {% endif %}
+                    </ul>
+                {% endfor %}
+            </div>
+        {% else %}
+            {% for news in news_list %}
+                <ul>
+                    {% if news.interest %}
+                    <li><a href="/news/{{ news.id }}">{{ news.title }}</a></li>
+                    {% endif %}
+                </ul>
+            {% endfor %}
+        {% endif %}
+    {% else %}
+    <p>Новостей нет</p>
+    {% endif %}
+</body>
+</html>
