@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'app_library',
     'app_users',
     'app_employment',
-    'app_media'
+    'app_media',
+    'app_goods',
 
 ]
 
@@ -127,3 +128,6 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/'
 
 SESSION_COOKIE_AGE = 30 * 24 * 60 * 60
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_URL = '/media/'
