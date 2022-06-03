@@ -1,11 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from app_users.forms import AuthForm, RegisterForm
+from app_users.forms import AuthForm, RegisterForm, RestorePasswordForm
 from app_users.models import Profile
-# Create your views here.
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -79,3 +81,24 @@ def another_register_view(request):
     else:
         form = RegisterForm()
     return render(request, 'users/register.html', {'form': form})
+
+
+def restore_password(request):
+    if request.method == 'POST':
+        restore_password_form = RestorePasswordForm(request.POST)
+        if restore_password_form.is_valid():
+            user_email = restore_password_form.cleaned_data['email']
+            new_password = User.objects.make_random_password()
+            current_user = User.objects.filter(email=user_email).first()
+            if current_user:
+                current_user.set_password(new_password)
+                current_user.save()
+            send_mail(
+                subject='Восстановление пароля',
+                message='Test',
+                from_email='admin@company.com',
+                recipient_list=[restore_password_form.cleaned_data['email']]
+            )
+            return HttpResponse('Письмо с новым паролем было успешно отправлено')
+    restore_password_form = RestorePasswordForm()
+    return render(request, 'users/restore_password.html', {'form': restore_password_form})
