@@ -6,6 +6,46 @@ from Parser import parsing
 import settings
 from settings import info, dict_
 import re
+import sqlite3 as db
+from sqlite3 import Error
+
+
+with db.connect('bot_db') as connection:
+    cursor = connection.cursor()
+    cursor.execute('CREATE TABLE IF NOT EXISTS USERS (chat_id INTEGER NOT NULL PRIMARY KEY, logfile TEXT, '
+                   'command TEXT, city TEXT, range_price TEXT, range_distance TEXT, amount TEXT, photo_amount TEXT, '
+                   'check_in TEXT, check_out TEXT)')
+
+
+def send_user_info(chat_id=None, logfile=None, command=None, city=None, range_price=None, range_distance=None,
+                   amount=None, photo_amount=None, check_in=None, check_out=None):
+    connection = db.connect('bot_db')
+    cursor = connection.cursor()
+    try:
+        if chat_id:
+            cursor.execute(f'INSERT INTO USERS (chat_id) VALUES({chat_id})')
+        elif logfile:
+            cursor.execute(f'INSERT INTO USERS (logfile) VALUES({logfile})')
+        elif command:
+            cursor.execute(f'INSERT INTO USERS (command) VALUES({command})')
+        elif city:
+            cursor.execute(f'INSERT INTO USERS (city) VALUES({city})')
+        elif range_price:
+            cursor.execute(f'INSERT INTO USERS (range_price) VALUES({range_price})')
+        elif range_distance:
+            cursor.execute(f'INSERT INTO USERS (range_distance) VALUES({range_distance})')
+        elif amount:
+            cursor.execute(f'INSERT INTO USERS (amount) VALUES({amount})')
+        elif photo_amount:
+            cursor.execute(f'INSERT INTO USERS (photo_amount) VALUES({photo_amount})')
+        elif check_in:
+            cursor.execute(f'INSERT INTO USERS (check_in) VALUES({check_in})')
+        elif check_out:
+            cursor.execute(f'INSERT INTO USERS (check_out) VALUES({check_out})')
+    except Error:
+        pass
+    connection.commit()
+    connection.close()
 
 
 bot = telebot.TeleBot(settings.KEY)
@@ -15,14 +55,17 @@ def welcome(message):
     '''
     Приветствует пользователя
     '''
-    global dict_
-    dict_[str(message.chat.id)] = info
-    dict_.get(str(message.chat.id))['log_file'] = str(message.chat.id).join(['log_', '.txt'])
-    print(dict_)
+    # # global \
+    # print('Словарь перед добавлением пользователя:', dict_)
+    # dict_[str(message.chat.id)] = info
+    # print('Словарь после добавления пользователя:', dict_)
+    # dict_.get(str(message.chat.id))['log_file'] = str(message.chat.id).join(['log_', '.txt'])
+    # print('Словарь после добавления лог-файла:', dict_)
+    send_user_info(chat_id=message.chat.id, logfile=str(message.chat.id).join(['log_', '.txt']))
+
     bot.send_message(message.chat.id,
                      'Привет, {name}!\nНе знаешь с чего начать?\nХочешь узнать что я могу?\nНажми кнопку Help. '
-                     'Или выбери другую команду.'.format(
-                         name=message.from_user.first_name))
+                     'Или выбери другую команду.'.format(name=message.from_user.first_name))
     start_key_board(message)
 
 
@@ -96,7 +139,7 @@ def get_range_price(message):
     """
     Определяет диапазон цен за номер за ночь
     """
-    global dict_
+    # global dict_
     keyboard = types.InlineKeyboardMarkup()
     key_message = 'Укажите стоимость номера за ночь'
     keyboard.row(
@@ -110,8 +153,7 @@ def get_range_price(message):
     )
     try:
         if message.text.isascii():
-            dict_.get(str(message.chat.id))['city'] = message.text
-            print(dict_)
+            send_user_info(city=message.text)
             bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
         else:
             bot.send_message(message.chat.id, 'В названии города используйте только латинские буквы')
@@ -142,7 +184,7 @@ def get_amount(message):
     """
     Определяет количество отелей по которым необходимо собрать информацию
     """
-    global dict_
+    # global dict_
     keyboard = types.InlineKeyboardMarkup()
     key_message = 'Укажите кол-во отелей.'
     keyboard.row(
@@ -154,8 +196,7 @@ def get_amount(message):
     )
     try:
         if message.text.isascii():
-            dict_.get(str(message.chat.id))['city'] = message.text
-            print(dict_)
+            send_user_info(city=message.text)
             bot.send_message(message.chat.id, text=key_message, reply_markup=keyboard)
         else:
             bot.send_message(message.chat.id, 'В названии города используйте только латинские буквы')
@@ -178,11 +219,12 @@ def get_photo(message):
     """
     Определяет необходимость загрузки фото
     """
-    global dict_
+    # global dict_
     if re.match(r'\d{4}-[0-1][0-9]-[0-3][0-9], \d{4}-[0-1][0-9]-[0-3][0-9]', message.text):
-        dict_.get(str(message.chat.id))['check_in'] = message.text.split(', ')[0]
-        dict_.get(str(message.chat.id))['check_out'] = message.text.split(', ')[1]
-        print(dict_)
+        send_user_info(check_in=message.text.split(', ')[0], check_out=message.text.split(', ')[1])
+        # dict_.get(str(message.chat.id))['check_in'] = message.text.split(', ')[0]
+        # dict_.get(str(message.chat.id))['check_out'] = message.text.split(', ')[1]
+        # print(dict_)
         keyboard = types.InlineKeyboardMarkup()
         key_message = 'Загрузить фото по отелям?'
         keyboard.row(
@@ -220,6 +262,11 @@ def get_confirmation(message):
     """
     Проверка запрашиваемых даных.
     """
+    with db.connect('bot_db') as c:
+        cursor = c.cursor()
+        cursor.execute('SELECT * FROM USERS')
+        res = cursor.fetchall()
+        print(res)
     keyboard = types.InlineKeyboardMarkup()
     key_yes = types.InlineKeyboardButton(text='Да', callback_data='Yes')
     keyboard.add(key_yes)
@@ -247,7 +294,7 @@ def callback_worker(call):
     """
     Обработка запроса.
     """
-    global dict_
+    # global dict_
     if call.data == "/help":
         bot.answer_callback_query(call.id)
         help_message(call.message)
@@ -260,9 +307,7 @@ def callback_worker(call):
 
         if call.data == "/lowprice":
             bot.answer_callback_query(call.id)
-            if call.chat.id == dict_.get(str(call.chat.id)):
-                dict_[str(call.chat.id)]['command'] = 'lowprice'
-            print(dict_)
+            send_user_info(command='lowprice')
             get_city(call.message)
 
         elif call.data == 'start_search':
@@ -271,56 +316,47 @@ def callback_worker(call):
 
         elif call.data == "/highprice":
             bot.answer_callback_query(call.id)
-            if call.chat.id == dict_.get(str(call.chat.id)):
-                dict_[str(call.chat.id)]['command'] = 'highprice'
-            print(dict_)
+            send_user_info(command='highprice')
             get_city(call.message)
 
         elif call.data == "/bestdeal":
             bot.answer_callback_query(call.id)
-            if call.chat.id == dict_.get(str(call.chat.id)):
-                dict_[str(call.chat.id)]['command'] = 'bestdeal'
-            print(dict_)
+            send_user_info(command='bestdeal')
             get_city(call.message)
 
         elif call.data in ['London', 'New York', 'Paris']:
             bot.answer_callback_query(call.id)
-            dict_[str(call.chat.id)]['city'] = call.data
-            print(dict_)
-            if dict_.get(str(call.chat.id))['command'] == 'bestdeal':
-                get_range_price(call)
-            else:
-                get_amount(call)
+            send_user_info(city=call.data)
+            # if dict_.get(str(call.chat.id))['command'] == 'bestdeal':
+            #     get_range_price(call)
+            # else:
+            get_amount(call)
 
-        elif call.data == 'my_city':
-            bot.answer_callback_query(call.id)
-            if dict_.get(str(call.chat.id))['command'] == 'bestdeal':
-                bot.register_next_step_handler(call.message, get_range_price)
-            else:
-                bot.register_next_step_handler(call.message, get_amount)
+        # elif call.data == 'my_city':
+        #     bot.answer_callback_query(call.id)
+        #     if dict_.get(str(call.chat.id))['command'] == 'bestdeal':
+        #         bot.register_next_step_handler(call.message, get_range_price)
+        #     else:
+        #         bot.register_next_step_handler(call.message, get_amount)
 
         elif re.search(r'\d{,3}, \d{,3}', call.data):
             bot.answer_callback_query(call.id)
-            dict_.get(str(call.chat.id))['range_price'] = call.data.split(', ')
-            print(dict_)
+            send_user_info(range_price=call.data.split(', '))
             get_range_distance(call.message)
 
         elif call.data.startswith('dist_'):
             bot.answer_callback_query(call.id)
-            dict_.get(str(call.chat.id))['range_distance'] = call.data.lstrip('dist_')
-            print(dict_)
+            send_user_info(range_distance=call.data.lstrip('dist_'))
             get_amount(call)
 
         elif call.data.startswith('amount_'):
             bot.answer_callback_query(call.id)
-            dict_.get(str(call.chat.id))['amount'] = call.data.lstrip('amount_')
-            print(dict_)
+            send_user_info(amount=call.data.lstrip('amount_'))
             get_date(call.message)
 
         elif call.data.startswith('photo_'):
             bot.answer_callback_query(call.id)
-            dict_.get(str(call.chat.id))['photo_amount'] = call.data.lstrip('photo_')
-            print(dict_)
+            send_user_info(photo_amount=call.data.lstrip('photo_'))
             get_confirmation(call)
 
         elif call.data == "Yes":
@@ -375,7 +411,7 @@ def callback_worker(call):
 
         elif call.data == 'no_p':
             bot.answer_callback_query(call.id)
-            dict_[str(call.chat.id)]['photo_amount'] = 0
+            send_user_info(photo_amount=0)
             get_confirmation(call)
 
 
